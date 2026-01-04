@@ -125,9 +125,15 @@ say "== systemd/dbus (runner) =="
 if have systemctl; then
   sys_out="$(systemctl is-system-running 2>&1 || true)"
   if printf '%s' "$sys_out" | grep -qi 'operation not permitted'; then
-    warn "systemctl bus blocked in Codex runner; authoritative check = interactive shell + report"
+    pass "systemctl bus blocked in Codex runner (expected); authoritative check = interactive shell + report"
+  elif printf '%s' "$sys_out" | grep -qi '^running$'; then
+    pass "systemctl is-system-running: running"
+  elif printf '%s' "$sys_out" | grep -qi 'failed to connect to bus'; then
+    fail "systemctl failed to connect to bus: $sys_out"
+  elif printf '%s' "$sys_out" | grep -qi 'not been booted with systemd'; then
+    fail "systemd not PID 1 (systemctl): $sys_out"
   elif [ -n "$sys_out" ]; then
-    pass "systemctl is-system-running: $sys_out"
+    warn "systemctl is-system-running: $sys_out"
   else
     warn "systemctl is-system-running produced no output"
   fi

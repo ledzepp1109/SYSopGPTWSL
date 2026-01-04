@@ -6,6 +6,8 @@
 3) `./sysop/drift-check.sh`
 4) Consult `sysop-report/2026-01-04_wsl_sysop.md` (repo copy) for baselines and operator notes.
 
+Optional: `./sysop/collect-baseline.sh` prints a paste-ready `## Current Baseline Snapshot` block.
+
 ## systemctl EPERM in Codex runner
 - If `systemctl` fails with `Failed to connect to bus: Operation not permitted` inside Codex runner, do not assume systemd is broken.
 - Authoritative check = run in an interactive Ubuntu shell:

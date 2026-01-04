@@ -1,8 +1,8 @@
 # sysop (WSL)
 
 ## Run checks
-- Preflight (fast): `~/sysop/preflight.sh`
-- Healthcheck (more complete): `~/sysop/healthcheck.sh`
+- Preflight (fast): `./sysop/preflight.sh`
+- Healthcheck (more complete): `./sysop/healthcheck.sh`
 - Drift check (invariants): `./sysop/drift-check.sh`
 - Print baseline block: `./sysop/collect-baseline.sh`
 

@@ -60,11 +60,11 @@ else
 fi
 
 path_lines="$(echo "${PATH:-}" | tr ':' '\n' | nl -ba)"
-matches="$(printf '%s\n' "$path_lines" | grep -n '\.npm-global/bin' || true)"
+matches="$(printf '%s\n' "$path_lines" | grep -F '.npm-global/bin' || true)"
 if [ -n "$matches" ]; then
   count="$(printf '%s\n' "$matches" | wc -l | tr -d ' ')"
-  first_line="$(printf '%s\n' "$matches" | head -n 1 | cut -d: -f1)"
-  say "- PATH: .npm-global/bin appears ${count} time(s) (first match line ${first_line})"
+  first_seg="$(printf '%s\n' "$matches" | head -n 1 | awk '{print $1}')"
+  say "- PATH: .npm-global/bin appears ${count} time(s) (first segment ${first_seg})"
 else
   say "- PATH: .npm-global/bin not found"
 fi
