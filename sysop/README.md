@@ -3,6 +3,8 @@
 ## Run checks
 - Preflight (fast): `~/sysop/preflight.sh`
 - Healthcheck (more complete): `~/sysop/healthcheck.sh`
+- Drift check (invariants): `./sysop/drift-check.sh`
+- Print baseline block: `./sysop/collect-baseline.sh`
 
 ## systemd/dbus recovery (WSL)
 If `systemctl` errors (e.g., `Failed to connect to bus: Operation not permitted`):
