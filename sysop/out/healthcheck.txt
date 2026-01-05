@@ -1,0 +1,208 @@
+WSL Healthcheck (read-only): 2026-01-04T22:12:30-06:00
+
+== OS ==
+
++ lsb_release -a || cat /etc/os-release
+Distributor ID:	Ubuntu
+Description:	Ubuntu 24.04.3 LTS
+Release:	24.04
+Codename:	noble
+
++ uname -a
+Linux TiffanyLT 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+
++ cat /proc/version; echo "WSL_DISTRO_NAME=${WSL_DISTRO_NAME-}"; grep -i microsoft /proc/version || true
+Linux version 6.6.87.2-microsoft-standard-WSL2 (root@439a258ad544) (gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.37) #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025
+WSL_DISTRO_NAME=Ubuntu
+Linux version 6.6.87.2-microsoft-standard-WSL2 (root@439a258ad544) (gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.37) #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025
+
+== WSL Config ==
+
++ if [ -f /etc/wsl.conf ]; then echo "/etc/wsl.conf:"; sed -n "1,200p" /etc/wsl.conf; else echo "(no /etc/wsl.conf)"; fi
+/etc/wsl.conf:
+[boot]
+systemd=true
+
+[user]
+default=xhott
+
++ mount | grep -E ' /mnt/c ' || true
+C:\ on /mnt/c type 9p (rw,noatime,aname=drvfs;path=C:\;uid=1000;gid=1000;symlinkroot=/mnt/,cache=5,access=client,msize=65536,trans=fd,rfd=6,wfd=6)
+
+== Shell/PATH ==
+
++ echo "SHELL=$SHELL"; echo "$PATH" | tr ":" "\n" | nl -ba | sed -n "1,120p"
+SHELL=/bin/bash
+     1	/home/xhott/.npm-global/bin
+     2	/home/xhott/.local/bin
+     3	/home/xhott/.local/bin
+     4	/tmp/.tmpDo7jsJ
+     5	/home/xhott/.npm-global/lib/node_modules/@openai/codex/vendor/x86_64-unknown-linux-musl/path
+     6	/home/xhott/.local/bin
+     7	/home/xhott/.local/bin
+     8	/home/xhott/.local/bin
+     9	/home/xhott/ops-operator/bin
+    10	/usr/local/sbin
+    11	/usr/local/bin
+    12	/usr/sbin
+    13	/usr/bin
+    14	/sbin
+    15	/bin
+    16	/usr/games
+    17	/usr/local/games
+    18	/usr/lib/wsl/lib
+    19	/mnt/c/Program Files/WindowsApps/MicrosoftCorporationII.WindowsSubsystemForLinux_2.6.3.0_x64__8wekyb3d8bbwe
+    20	/mnt/c/Program Files/ImageMagick-7.1.2-Q16-HDRI
+    21	/mnt/c/Program Files (x86)/Common Files/Oracle/Java/java8path
+    22	/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath
+    23	/mnt/c/WINDOWS/system32
+    24	/mnt/c/WINDOWS
+    25	/mnt/c/WINDOWS/System32/Wbem
+    26	/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/
+    27	/mnt/c/WINDOWS/System32/OpenSSH/
+    28	/mnt/c/Program Files/Liquid Technologies/Liquid Studio/XmlDataBinder21/Redist21/cpp/win32/bin
+    29	/mnt/c/Program Files/Liquid Technologies/Liquid Studio/XmlDataBinder21/Redist21/cpp/win64/bin
+    30	/mnt/c/Program Files/gs/gs10.06.0/bin
+    31	/mnt/c/ProgramData/chocolatey/bin
+    32	/mnt/c/Program Files/Git/cmd
+    33	/mnt/c/Program Files/Docker/Docker/resources/bin
+    34	/mnt/c/Program Files/nodejs/
+    35	/mnt/c/Program Files/dotnet/
+    36	/mnt/c/Program Files/PowerShell/7/
+    37	/mnt/c/Users/xhott/AppData/Local/Programs/Python/Python311/Scripts/
+    38	/mnt/c/Users/xhott/AppData/Local/Programs/Python/Python311/
+    39	/mnt/c/Users/xhott/AppData/Local/Programs/Python/Python312/Scripts/
+    40	/mnt/c/Users/xhott/AppData/Local/Programs/Python/Python312/
+    41	/mnt/c/Users/xhott/AppData/Local/Programs/Python/Launcher/
+    42	/mnt/c/Users/xhott/.local/bin
+    43	/mnt/c/Users/xhott/AppData/Local/Microsoft/WindowsApps
+    44	/mnt/c/Users/xhott/AppData/Local/Programs/Microsoft VS Code/bin
+    45	/mnt/c/Program Files/Tesseract-OCR
+    46	/mnt/c/Users/xhott/AppData/Local/GitHubDesktop/bin
+    47	/mnt/c/Users/xhott/AppData/Local/Microsoft/WinGet/Packages/Rclone.Rclone_Microsoft.Winget.Source_8wekyb3d8bbwe/rclone-v1.71.2-windows-amd64
+    48	/mnt/c/Users/xhott/AppData/Roaming/npm
+    49	/mnt/c/Users/xhott/AppData/Local/Microsoft/WinGet/Links
+    50	/mnt/c/Users/xhott/AppData/Local/Programs/Antigravity/bin
+    51	/mnt/c/Users/xhott/AppData/Local/PowerToys/DSCModules/
+    52	/snap/bin
+
+== Git ==
+
++ git --version
+git version 2.43.0
+
++ echo -n "core.autocrlf="; git config --global --get core.autocrlf || true; echo -n "core.filemode="; git config --global --get core.filemode || true
+core.autocrlf=input
+core.filemode=
+== Node/NPM ==
+
++ node -v 2>/dev/null || echo "node: not found"; npm -v 2>/dev/null || echo "npm: not found"
+v22.21.0
+11.7.0
+
++ npm config get prefix; npm prefix -g; npm root -g
+/home/xhott/.npm-global
+/home/xhott/.npm-global
+/home/xhott/.npm-global/lib/node_modules
+
++ command -v codex || true; codex --version 2>/dev/null || true
+/home/xhott/.npm-global/bin/codex
+codex-cli 0.77.0
+
+== Python ==
+
++ python3 --version; pip3 --version 2>/dev/null || true
+Python 3.12.3
+pip 24.0 from /usr/lib/python3/dist-packages/pip (python 3.12)
+
+== SSH ==
+
++ ls -la ~/.ssh 2>/dev/null || true; ssh-add -l 2>/dev/null || true
+total 32
+drwx------  2 xhott xhott 4096 Jan  4 10:39 .
+drwxr-x--- 23 xhott xhott 4096 Jan  4 10:13 ..
+-rw-------  1 xhott xhott   81 Jan  4 10:39 config
+-rw-------  1 xhott xhott   81 Jan  4 10:39 config.bak-20260104-103928
+-rw-------  1 xhott xhott  411 Jan  4 09:14 id_ed25519
+-rw-r--r--  1 xhott xhott   97 Jan  4 09:14 id_ed25519.pub
+-rw-------  1 xhott xhott  978 Jan  4 09:58 known_hosts
+-rw-r--r--  1 xhott xhott  142 Dec 10 00:58 known_hosts.old
+
+== Resources ==
+
++ df -h /home/xhott
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  5.9G  950G   1% /
+
++ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           9.7Gi       494Mi       8.9Gi       3.5Mi       546Mi       9.2Gi
+Swap:          4.0Gi          0B       4.0Gi
+
++ ls -la ~ | head -n 50
+total 340
+drwxr-x--- 23 xhott xhott  4096 Jan  4 10:13 .
+drwxr-xr-x  3 root  root   4096 Dec  9 17:21 ..
+-rw-------  1 xhott xhott 41615 Jan  4 22:10 .bash_history
+-rw-r--r--  1 xhott xhott   220 Dec  9 17:21 .bash_logout
+-rw-r--r--  1 xhott xhott  6189 Jan  4 08:52 .bashrc
+-rw-r--r--  1 xhott xhott  5428 Jan  4 07:59 .bashrc.bak-20260104-084950
+-rw-r--r--  1 xhott xhott  5651 Jan  4 08:50 .bashrc.bak-20260104-085113
+-rw-r--r--  1 xhott xhott  5941 Jan  4 08:51 .bashrc.bak-20260104-085207
+drwx------  5 xhott xhott  4096 Dec 13 06:30 .cache
+drwxr-xr-x 15 xhott xhott  4096 Jan  4 06:23 .claude
+-rw-------  1 xhott xhott 56917 Jan  4 06:23 .claude.json
+-rw-------  1 xhott xhott 56886 Jan  4 06:23 .claude.json.backup
+-rw-r--r--  1 xhott xhott    90 Dec 10 00:19 .claudignore
+drwxr-xr-x  5 xhott xhott  4096 Jan  4 22:11 .codex
+drwxr-xr-x  6 xhott xhott  4096 Dec 13 06:39 .config
+drwxr-xr-x  3 xhott xhott  4096 Dec 13 06:30 .dotnet
+-rw-r--r--  1 xhott xhott   309 Jan  4 10:06 .gitconfig
+-rw-r--r--  1 xhott xhott   228 Dec 10 00:53 .gitconfig.bak-20260104-091354
+-rw-r--r--  1 xhott xhott    92 Dec 10 00:53 .gitignore_global
+drwxr-xr-x  2 xhott xhott  4096 Dec 10 00:58 .landscape
+-rw-------  1 xhott xhott    81 Jan  4 08:02 .lesshst
+drwxr-xr-x  5 xhott xhott  4096 Dec 31 02:15 .local
+-rw-rw-r--  1 xhott xhott     0 Jan  4 02:27 .motd_shown
+drwxr-xr-x  4 xhott xhott  4096 Dec  9 17:38 .npm
+drwxr-xr-x  5 xhott xhott  4096 Dec 10 00:16 .npm-global
+-rw-------  1 xhott xhott    31 Jan  4 08:25 .npmrc
+-rw-------  1 xhott xhott    21 Jan  4 07:11 .npmrc.bak
+drwxr-xr-x  8 xhott xhott  4096 Jan  4 07:07 .nvm
+-rw-r--r--  1 xhott xhott  1632 Jan  4 08:52 .profile
+-rw-r--r--  1 xhott xhott   833 Dec  9 22:09 .profile.bak-20260104-084950
+-rw-r--r--  1 xhott xhott  1092 Jan  4 08:49 .profile.bak-20260104-085113
+-rw-r--r--  1 xhott xhott  1398 Jan  4 08:51 .profile.bak-20260104-085207
+drwx------  2 xhott xhott  4096 Jan  4 10:39 .ssh
+-rw-r--r--  1 xhott xhott     0 Dec  9 17:36 .sudo_as_admin_successful
+drwxr-xr-x  3 xhott xhott  4096 Dec 13 06:37 .vscode-remote-containers
+drwxr-xr-x  5 xhott xhott  4096 Dec 13 06:30 .vscode-server
+-rw-r--r--  1 xhott xhott   180 Dec 10 00:42 .wget-hsts
+-rw-r--r--  1 xhott xhott    26 Dec  9 22:09 .zshrc
+drwxr-xr-x  7 xhott xhott  4096 Jan  4 21:23 SYSopGPTWSL
+drwxr-xr-x  2 xhott xhott  4096 Dec 31 18:01 archives
+drwxr-xr-x 16 xhott xhott  4096 Jan  4 02:18 ops-operator
+drwxr-xr-x  3 xhott xhott  4096 Dec 31 02:15 ops_bootstrap
+drwxr-xr-x  2 xhott xhott  4096 Jan  4 10:38 sysop
+drwxr-xr-x  2 xhott xhott  4096 Jan  4 10:37 sysop-report
+drwxr-xr-x  2 xhott xhott  4096 Dec 10 00:57 test-direnv
+drwxr-xr-x  2 xhott xhott  4096 Jan  4 07:59 work
+
+== systemd/dbus ==
+
++ ps -p 1 -o comm=; ls -la /run/systemd/system 2>/dev/null || true; ls -la /run/dbus/system_bus_socket 2>/dev/null || true; systemctl --version
+systemd
+total 4
+drwxr-xr-x  3 root root  80 Jan  4 22:08 .
+drwxr-xr-x 24 root root 620 Jan  4 22:08 ..
+-rw-r--r--  1 root root 337 Jan  4 22:08 netplan-ovs-cleanup.service
+drwxr-xr-x  2 root root  60 Jan  4 22:08 systemd-networkd.service.wants
+srw-rw-rw- 1 root root 0 Jan  4 22:08 /run/dbus/system_bus_socket
+systemd 255 (255.4-1ubuntu8.12)
++PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified
+
++ systemctl is-system-running 2>&1 || true
+running
+
++ ps -ef | grep -E "dbus-daemon|dbus-broker" | grep -v grep || true
+message+     160       1  0 22:08 ?        00:00:00 @dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only

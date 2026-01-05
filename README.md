@@ -11,4 +11,5 @@ GPT/Codex-native operator assets for this WSL Ubuntu environment.
 
 ## Usage
 - Run `sysop/preflight.sh` first, then `sysop/healthcheck.sh`.
+- Or run the operator kernel: `./sysop/run.sh all` (writes `sysop/out/report.md`).
 - Consult `sysop-report/2026-01-04_wsl_sysop.md` for current baseline + operator notes.

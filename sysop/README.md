@@ -1,6 +1,7 @@
 # sysop (WSL)
 
 ## Run checks
+- One command (recommended): `./sysop/run.sh all`
 - Preflight (fast): `./sysop/preflight.sh`
 - Healthcheck (more complete): `./sysop/healthcheck.sh`
 - Drift check (invariants): `./sysop/drift-check.sh`

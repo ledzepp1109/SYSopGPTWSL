@@ -1,5 +1,7 @@
 [CmdletBinding()]
-param()
+param(
+    [Parameter()][string]$OutDir
+)
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
@@ -83,11 +85,21 @@ function Try-Registry {
 
 $collectedAt = (Get-Date).ToString("o")
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
-$outDir = Join-Path $repoRoot "sysop-report\windows"
-$null = New-Item -ItemType Directory -Force -Path $outDir
+if ($OutDir -and $OutDir.Trim().Length -gt 0) {
+    $outDir = $OutDir
+    $null = New-Item -ItemType Directory -Force -Path $outDir
+    $outDir = (Resolve-Path $outDir).Path
 
-$outTxt = Join-Path $outDir "snapshot.txt"
-$outJson = Join-Path $outDir "snapshot.json"
+    $outTxt = Join-Path $outDir "windows_snapshot.txt"
+    $outJson = Join-Path $outDir "windows_snapshot.json"
+}
+else {
+    $outDir = Join-Path $repoRoot "sysop-report\windows"
+    $null = New-Item -ItemType Directory -Force -Path $outDir
+
+    $outTxt = Join-Path $outDir "snapshot.txt"
+    $outJson = Join-Path $outDir "snapshot.json"
+}
 
 $cpu = Try-Cim -ClassName "Win32_Processor" -Select @(
     "Name", "Manufacturer", "NumberOfCores", "NumberOfLogicalProcessors", "MaxClockSpeed", "CurrentClockSpeed"

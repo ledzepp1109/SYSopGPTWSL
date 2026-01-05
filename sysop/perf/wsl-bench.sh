@@ -3,16 +3,23 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "$script_dir/../.." && pwd)"
-out_dir="$repo_root/sysop-report/perf"
-
-mkdir -p "$out_dir"
 
 ts="$(date +%Y%m%d-%H%M%S 2>/dev/null || date)"
-out_file="$out_dir/wsl-bench-${ts}.txt"
+out_file="${WSL_BENCH_OUT_FILE:-}"
+if [ -z "$out_file" ]; then
+  out_dir="${WSL_BENCH_OUT_DIR:-$repo_root/sysop-report/perf}"
+  mkdir -p "$out_dir"
+  out_file="$out_dir/wsl-bench-${ts}.txt"
+else
+  case "$out_file" in
+    /dev/stdout|/dev/stderr|/dev/null) ;;
+    *) mkdir -p "$(dirname -- "$out_file")" ;;
+  esac
+fi
 
 say() { printf '%s\n' "$*"; }
 
-{
+bench_body() {
   say "## WSL Bench (${ts})"
   say ""
   say "Context:"
@@ -93,7 +100,8 @@ PY
       sed -n '1,5p' "$cpu_tmp"/*.err 2>/dev/null | sed -n '1,5p' || true
     fi
 
-    rm -rf "$cpu_tmp"
+    rm -f "$cpu_tmp"/* 2>/dev/null || true
+    rmdir "$cpu_tmp" 2>/dev/null || true
   else
     say "SKIP: python3 missing"
   fi
@@ -160,7 +168,27 @@ PY
 
   say "== Notes =="
   say "- Disk read results can be cache-influenced; write uses fdatasync for a stronger signal."
-} | tee "$out_file"
+}
 
-say ""
-say "Wrote: $out_file"
+case "$out_file" in
+  /dev/stdout)
+    bench_body
+    ;;
+  /dev/stderr)
+    bench_body >&2
+    ;;
+  /dev/null)
+    bench_body >/dev/null
+    ;;
+  *)
+    bench_body | tee "$out_file"
+    ;;
+esac
+
+case "$out_file" in
+  /dev/stdout|/dev/stderr|/dev/null) ;;
+  *)
+    say ""
+    say "Wrote: $out_file"
+    ;;
+esac

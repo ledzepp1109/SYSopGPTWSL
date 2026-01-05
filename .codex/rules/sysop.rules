@@ -1,0 +1,60 @@
+# SYSopGPTWSL (minimal) execpolicy rules.
+#
+# Goal: block truly-never patterns for this repo/operator workflow.
+
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "forbidden",
+    match = ["rm -rf /"],
+    not_match = ["rm -f file.txt"],
+)
+
+prefix_rule(
+    pattern = ["rm", "-fr"],
+    decision = "forbidden",
+    match = ["rm -fr /tmp/whatever"],
+    not_match = ["rm -r dir"],
+)
+
+prefix_rule(
+    pattern = ["rm", "-r", "-f"],
+    decision = "forbidden",
+    match = ["rm -r -f /"],
+    not_match = ["rm -r dir"],
+)
+
+prefix_rule(
+    pattern = ["rm", "-f", "-r"],
+    decision = "forbidden",
+    match = ["rm -f -r /"],
+    not_match = ["rm -f file.txt"],
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    match = ["git reset --hard"],
+    not_match = ["git reset --keep"],
+)
+
+prefix_rule(
+    pattern = ["git", "clean", "-fdx"],
+    decision = "forbidden",
+    match = ["git clean -fdx"],
+    not_match = ["git clean -fd"],
+)
+
+prefix_rule(
+    pattern = ["git", "clean", "-xdf"],
+    decision = "forbidden",
+    match = ["git clean -xdf"],
+    not_match = ["git clean -x"],
+)
+
+prefix_rule(
+    pattern = ["sudo"],
+    decision = "forbidden",
+    match = ["sudo tee /etc/hosts"],
+    not_match = ["echo ok"],
+)
+

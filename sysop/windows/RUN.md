@@ -1,16 +1,22 @@
 # Windows snapshot collection
 
-This repo can’t reliably execute Windows binaries from the Codex runner. Run this from an interactive WSL shell (or Windows PowerShell).
+Preferred (from repo root):
+- `./sysop/run.sh snapshot`
 
-## Run (interactive WSL, from repo root)
+## Manual run (drive-backed cwd; avoids UNC warnings)
 
 ```bash
-SCRIPT_WIN="$(wslpath -w "$PWD/sysop/windows/collect-windows.ps1")"; (cd /mnt/c && powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$SCRIPT_WIN")
+SCRIPT_WIN="$(wslpath -w "$PWD/sysop/windows/collect-windows.ps1")"
+OUT_WIN="$(wslpath -w "$PWD/sysop/out")"
+(cd /mnt/c && powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$SCRIPT_WIN" -OutDir "$OUT_WIN")
 ```
 
 Outputs (written into the repo):
-- `sysop-report/windows/snapshot.txt`
-- `sysop-report/windows/snapshot.json`
+- `sysop/out/windows_snapshot.txt`
+- `sysop/out/windows_snapshot.json`
+
+Notes:
+- Windows PowerShell may emit UTF-8 BOM in JSON; Linux readers should use `utf-8-sig`.
 
 Rollback:
-- `rm -f sysop-report/windows/snapshot.txt sysop-report/windows/snapshot.json`
+- `rm -f sysop/out/windows_snapshot.txt sysop/out/windows_snapshot.json`

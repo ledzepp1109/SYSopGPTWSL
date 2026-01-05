@@ -1,0 +1,157 @@
+﻿{
+    "collected_at":  "2026-01-04T12:23:04.5125074-06:00",
+    "repo_root":  "Microsoft.PowerShell.Core\\FileSystem::\\\\wsl.localhost\\Ubuntu\\home\\xhott\\SYSopGPTWSL\\sysop\\windows\\..\\..",
+    "windows":  {
+                    "os":  {
+                               "class":  "Win32_OperatingSystem",
+                               "namespace":  "root/cimv2",
+                               "data":  {
+                                            "Caption":  "Microsoft Windows 11 Home",
+                                            "Version":  "10.0.26200",
+                                            "BuildNumber":  "26200",
+                                            "OSArchitecture":  "64-bit"
+                                        },
+                               "error":  null
+                           },
+                    "cpu":  {
+                                "class":  "Win32_Processor",
+                                "namespace":  "root/cimv2",
+                                "data":  {
+                                             "Name":  "Intel(R) Core(TM) i5-1035G1 CPU @ 1.00GHz",
+                                             "Manufacturer":  "GenuineIntel",
+                                             "NumberOfCores":  4,
+                                             "NumberOfLogicalProcessors":  8,
+                                             "MaxClockSpeed":  1201,
+                                             "CurrentClockSpeed":  1201
+                                         },
+                                "error":  null
+                            },
+                    "computer_system":  {
+                                            "class":  "Win32_ComputerSystem",
+                                            "namespace":  "root/cimv2",
+                                            "data":  {
+                                                         "Manufacturer":  "HP",
+                                                         "Model":  "HP Laptop 14-dq1xxx",
+                                                         "TotalPhysicalMemory":  16852422656
+                                                     },
+                                            "error":  null
+                                        },
+                    "bios":  {
+                                 "class":  "Win32_BIOS",
+                                 "namespace":  "root/cimv2",
+                                 "data":  {
+                                              "Manufacturer":  "AMI",
+                                              "SMBIOSBIOSVersion":  "F.41",
+                                              "ReleaseDate":  "\/Date(1754352000000)\/",
+                                              "SerialNumber":  "5CD942G5C0"
+                                          },
+                                 "error":  null
+                             },
+                    "gpu":  {
+                                "class":  "Win32_VideoController",
+                                "namespace":  "root/cimv2",
+                                "data":  {
+                                             "Name":  "Intel(R) UHD Graphics",
+                                             "DriverVersion":  "31.0.101.2137"
+                                         },
+                                "error":  null
+                            },
+                    "storage":  {
+                                    "physical_disks":  {
+                                                           "FriendlyName":  "INTEL SSDPEKNW512G8",
+                                                           "MediaType":  "SSD",
+                                                           "BusType":  "NVMe",
+                                                           "Size":  512110190592,
+                                                           "HealthStatus":  "Healthy"
+                                                       },
+                                    "physical_disks_error":  null,
+                                    "volumes":  [
+                                                    {
+                                                        "DriveLetter":  "C",
+                                                        "FileSystem":  "NTFS",
+                                                        "Size":  510619807744,
+                                                        "SizeRemaining":  114260545536,
+                                                        "HealthStatus":  "Healthy"
+                                                    },
+                                                    {
+                                                        "DriveLetter":  null,
+                                                        "FileSystem":  "NTFS",
+                                                        "Size":  554692608,
+                                                        "SizeRemaining":  540012544,
+                                                        "HealthStatus":  "Healthy"
+                                                    },
+                                                    {
+                                                        "DriveLetter":  null,
+                                                        "FileSystem":  "NTFS",
+                                                        "Size":  811593728,
+                                                        "SizeRemaining":  92360704,
+                                                        "HealthStatus":  "Healthy"
+                                                    }
+                                                ],
+                                    "volumes_error":  null
+                                },
+                    "power":  {
+                                  "powercfg_list":  {
+                                                        "command":  "powercfg /L",
+                                                        "exit_code":  0,
+                                                        "output":  "\r\nExisting Power Schemes (* Active)\r\n-----------------------------------\r\nPower Scheme GUID: 1a2f010b-65d0-4f4b-915d-3c8c3705ef0d  (Ultimate Performance)\r\nPower Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)\r\nPower Scheme GUID: 45570fd2-0a1f-4d54-a7bb-4096715e7540  (High performance)\r\nPower Scheme GUID: ccc086bf-7555-4af0-8701-ee2ebe989fff  (High performance)\r\nPower Scheme GUID: ce493221-a84d-40ba-9351-45a4aac76eeb  (Balanced)\r\nPower Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance) *",
+                                                        "error":  null
+                                                    },
+                                  "powercfg_active_scheme":  {
+                                                                 "command":  "powercfg /GETACTIVESCHEME",
+                                                                 "exit_code":  0,
+                                                                 "output":  "Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)",
+                                                                 "error":  null
+                                                             },
+                                  "powercfg_sleep_states":  {
+                                                                "command":  "powercfg /A",
+                                                                "exit_code":  0,
+                                                                "output":  "The following sleep states are available on this system:\r\n    Standby (S3)\r\n\r\nThe following sleep states are not available on this system:\r\n    Standby (S1)\r\n\tThe system firmware does not support this standby state.\r\n\r\n    Standby (S2)\r\n\tThe system firmware does not support this standby state.\r\n\r\n    Hibernate\r\n\tHibernation has not been enabled.\r\n\r\n    Standby (S0 Low Power Idle)\r\n\tThe system firmware does not support this standby state.\r\n\r\n    Hybrid Sleep\r\n\tHibernation is not available.\r\n\tThe hypervisor does not support this standby state.\r\n\r\n    Fast Startup\r\n\tHibernation is not available.",
+                                                                "error":  null
+                                                            },
+                                  "throttle_min":  {
+                                                       "command":  "powercfg /Q SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN",
+                                                       "exit_code":  0,
+                                                       "output":  "Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)\r\n  GUID Alias: SCHEME_MIN\r\n  Subgroup GUID: 54533251-82be-4824-96c1-47b60b740d00  (Processor power management)\r\n    GUID Alias: SUB_PROCESSOR\r\n    Power Setting GUID: 893dee8e-2bef-41e0-89c6-b55d0929964c  (Minimum processor state)\r\n      GUID Alias: PROCTHROTTLEMIN\r\n      Minimum Possible Setting: 0x00000000\r\n      Maximum Possible Setting: 0x00000064\r\n      Possible Settings increment: 0x00000001\r\n      Possible Settings units: %\r\n    Current AC Power Setting Index: 0x00000005\r\n    Current DC Power Setting Index: 0x00000005",
+                                                       "error":  null
+                                                   },
+                                  "throttle_max":  {
+                                                       "command":  "powercfg /Q SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX",
+                                                       "exit_code":  0,
+                                                       "output":  "Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)\r\n  GUID Alias: SCHEME_MIN\r\n  Subgroup GUID: 54533251-82be-4824-96c1-47b60b740d00  (Processor power management)\r\n    GUID Alias: SUB_PROCESSOR\r\n    Power Setting GUID: bc5038f7-23e0-4960-96da-33abaf5935ec  (Maximum processor state)\r\n      GUID Alias: PROCTHROTTLEMAX\r\n      Minimum Possible Setting: 0x00000000\r\n      Maximum Possible Setting: 0x00000064\r\n      Possible Settings increment: 0x00000001\r\n      Possible Settings units: %\r\n    Current AC Power Setting Index: 0x00000064\r\n    Current DC Power Setting Index: 0x00000064",
+                                                       "error":  null
+                                                   },
+                                  "boost_mode":  {
+                                                     "command":  "powercfg /Q SCHEME_CURRENT SUB_PROCESSOR PERFBOOSTMODE",
+                                                     "exit_code":  0,
+                                                     "output":  "Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)\r\n  GUID Alias: SCHEME_MIN",
+                                                     "error":  null
+                                                 },
+                                  "power_throttling_registry":  {
+                                                                    "path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+                                                                    "data":  null,
+                                                                    "error":  "Cannot find path \u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling\u0027 because it does not exist."
+                                                                }
+                              },
+                    "wsl":  {
+                                "status":  {
+                                               "command":  "wsl --status",
+                                               "exit_code":  0,
+                                               "output":  "D\u0000e\u0000f\u0000a\u0000u\u0000l\u0000t\u0000 \u0000D\u0000i\u0000s\u0000t\u0000r\u0000i\u0000b\u0000u\u0000t\u0000i\u0000o\u0000n\u0000:\u0000 \u0000U\u0000b\u0000u\u0000n\u0000t\u0000u\u0000\r\n\u0000\r\n\u0000D\u0000e\u0000f\u0000a\u0000u\u0000l\u0000t\u0000 \u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00002\u0000\r\n\u0000\r\n\u0000",
+                                               "error":  null
+                                           },
+                                "version":  {
+                                                "command":  "wsl --version",
+                                                "exit_code":  0,
+                                                "output":  "W\u0000S\u0000L\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00002\u0000.\u00006\u0000.\u00003\u0000.\u00000\u0000\r\n\u0000\r\n\u0000K\u0000e\u0000r\u0000n\u0000e\u0000l\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00006\u0000.\u00006\u0000.\u00008\u00007\u0000.\u00002\u0000-\u00001\u0000\r\n\u0000\r\n\u0000W\u0000S\u0000L\u0000g\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00000\u0000.\u00007\u00001\u0000\r\n\u0000\r\n\u0000M\u0000S\u0000R\u0000D\u0000C\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00002\u0000.\u00006\u00003\u00005\u00003\u0000\r\n\u0000\r\n\u0000D\u0000i\u0000r\u0000e\u0000c\u0000t\u00003\u0000D\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00006\u00001\u00001\u0000.\u00001\u0000-\u00008\u00001\u00005\u00002\u00008\u00005\u00001\u00001\u0000\r\n\u0000\r\n\u0000D\u0000X\u0000C\u0000o\u0000r\u0000e\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00001\u00000\u00000\u0000.\u00001\u0000-\u00002\u00004\u00000\u00003\u00003\u00001\u0000-\u00001\u00004\u00003\u00005\u0000.\u0000g\u0000e\u0000-\u0000r\u0000e\u0000l\u0000e\u0000a\u0000s\u0000e\u0000\r\n\u0000\r\n\u0000W\u0000i\u0000n\u0000d\u0000o\u0000w\u0000s\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00002\u00000\u00000\u0000.\u00007\u00004\u00006\u00002\u0000\r\n\u0000\r\n\u0000",
+                                                "error":  null
+                                            },
+                                "list":  {
+                                             "command":  "wsl -l -v",
+                                             "exit_code":  0,
+                                             "output":  " \u0000 \u0000N\u0000A\u0000M\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000S\u0000T\u0000A\u0000T\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000V\u0000E\u0000R\u0000S\u0000I\u0000O\u0000N\u0000\r\n\u0000\r\n\u0000*\u0000 \u0000U\u0000b\u0000u\u0000n\u0000t\u0000u\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000R\u0000u\u0000n\u0000n\u0000i\u0000n\u0000g\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u00002\u0000\r\n\u0000\r\n\u0000 \u0000 \u0000d\u0000o\u0000c\u0000k\u0000e\u0000r\u0000-\u0000d\u0000e\u0000s\u0000k\u0000t\u0000o\u0000p\u0000 \u0000 \u0000 \u0000 \u0000S\u0000t\u0000o\u0000p\u0000p\u0000e\u0000d\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u00002\u0000\r\n\u0000\r\n\u0000",
+                                             "error":  null
+                                         }
+                            }
+                }
+}

@@ -1,0 +1,23 @@
+## WSL Bench (20260104-122320)
+
+Context:
+- repo_root: /home/xhott/SYSopGPTWSL
+- uname: Linux TiffanyLT 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+- nproc: 4
+- python3: Python 3.12.3
+
+== CPU (sha256 loop) ==
+CPU single-thread: seconds=15.000 loops=8645816 rate_per_s=576388
+CPU multi-process: workers=4 seconds=30.0466 loops=45980342 rate_per_s=1530301
+
+== Memory (allocation + touch) ==
+Memory alloc: mb=256 seconds=0.294
+Memory touch: mb=256 seconds=0.016 page_step=4096
+
+== Disk (/tmp write + fsync, then read) ==
+Temp file: /tmp/wsl-bench.AbDJ1M (size=512MiB)
+Disk write: seconds=0.636133 mib_per_s=804.9 (fdatasync)
+Disk read: seconds=0.0910518 mib_per_s=5623.2 mode=iflag=direct
+
+== Notes ==
+- Disk read results can be cache-influenced; write uses fdatasync for a stronger signal.

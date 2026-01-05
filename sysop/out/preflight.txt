@@ -1,0 +1,10 @@
+Preflight (read-only): 2026-01-04T22:12:30-06:00
+PASS: WSL detected
+PASS: PWD is not under /mnt
+PASS: codex on PATH: /home/xhott/.npm-global/bin/codex
+PASS: npm prefix is user-level: /home/xhott/.npm-global
+PASS: PATH contains /home/xhott/.npm-global/bin exactly once
+PASS: node: v22.21.0
+PASS: python3: Python 3.12.3
+WARN: git working tree has local changes
+Summary: PASS=7 WARN=1 FAIL=0

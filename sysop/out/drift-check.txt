@@ -1,0 +1,23 @@
+Drift check (read-only): 2026-01-04T22:12:32-06:00
+Repo: /home/xhott/SYSopGPTWSL
+
+== Toolchain ==
+PASS: codex path: /home/xhott/.npm-global/bin/codex
+INFO: codex --version: codex-cli 0.77.0
+PASS: npm prefix -g: /home/xhott/.npm-global
+PASS: PATH contains /home/xhott/.npm-global/bin exactly once
+PASS: git core.autocrlf=input
+
+== SSH (local) ==
+PASS: ~/.ssh/id_ed25519.pub present
+PASS: ~/.ssh/config has github.com IdentityFile + IdentitiesOnly
+INFO: network auth test (manual): ssh -T git@github.com
+
+== Report ==
+PASS: report present: /home/xhott/SYSopGPTWSL/sysop-report/2026-01-04_wsl_sysop.md
+PASS: report includes Codex-runner systemctl note
+
+== systemd/dbus (runner) ==
+PASS: systemctl is-system-running: running
+
+Summary: PASS=9 WARN=0 FAIL=0
