@@ -1,11 +1,29 @@
 ---
 name: sysop-kernel
-description: Run the SYSopGPTWSL operator kernel (repeatable sysop pipeline + diffable report + learning ledger), using Plan-first execution and explicit verification reporting.
+description: >-
+  WSL2 system health checks and Windows-specific hardening operator kernel for
+  SYSopGPTWSL: run a repeatable sysop pipeline (preflight, WSL healthcheck,
+  drift check, Windows snapshot via PowerShell, perf bench), produce a diffable
+  report, and append evidence to `learn/LEDGER.md`. Use for sysop/health checks,
+  drift/baseline verification, or when debugging Windows/WSL interop pitfalls
+  (UNC cwd, UTF-8 BOM in PowerShell JSON, `/mnt/c` performance) and for
+  Windows-side hardening/performance signals (power plan, power throttling,
+  storage/volume inventory, WSL status/version). Use Plan-first execution and
+  explicit verification reporting.
+short-description: WSL2 sysop health/drift/baseline checks
+triggers:
+  - sysop
+  - system check
+  - health check
+  - drift check
+  - baseline
+version: 1.0.0
+codex-version: ">=0.76.0"
 metadata:
   short-description: Run sysop operator kernel
 ---
 
-# SYSop Operator Kernel (skill)
+# SYSop Operator Kernel
 
 Follow `AGENTS.md` (Plan-first; worktrees per task when parallel; verification required; auditable notes).
 
@@ -22,9 +40,10 @@ Follow `AGENTS.md` (Plan-first; worktrees per task when parallel; verification r
 5) Minimal evidence (read-only) to gather as needed:
    - `./sysop/preflight.sh`
    - `./sysop/healthcheck.sh`
-   - `command -v powershell.exe` (if Windows snapshot is requested)
+   - `command -v powershell.exe || command -v pwsh.exe` (if Windows snapshot is requested)
 6) Propose the exact `./sysop/run.sh ...` command(s) and STOP for approval:
    - `./sysop/run.sh all` (writes under `sysop/out/` and appends to `learn/LEDGER.md`)
+   - Optional (repo-scoped auto-fix + script generation): `./sysop/run.sh all --apply-fixes`
 
 ## Execution mode (after approval)
 - Run the approved `./sysop/run.sh ...` command(s) from repo root.
