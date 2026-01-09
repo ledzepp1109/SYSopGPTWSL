@@ -1,9 +1,9 @@
-Drift check (read-only): 2026-01-04T22:12:32-06:00
+Drift check (read-only): 2026-01-06T17:36:55-06:00
 Repo: /home/xhott/SYSopGPTWSL
 
 == Toolchain ==
 PASS: codex path: /home/xhott/.npm-global/bin/codex
-INFO: codex --version: codex-cli 0.77.0
+INFO: codex --version: codex-cli 0.78.0
 PASS: npm prefix -g: /home/xhott/.npm-global
 PASS: PATH contains /home/xhott/.npm-global/bin exactly once
 PASS: git core.autocrlf=input

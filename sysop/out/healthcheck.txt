@@ -1,4 +1,4 @@
-WSL Healthcheck (read-only): 2026-01-04T22:12:30-06:00
+WSL Healthcheck (read-only): 2026-01-06T17:36:54-06:00
 
 == OS ==
 
@@ -23,8 +23,9 @@ Linux version 6.6.87.2-microsoft-standard-WSL2 (root@439a258ad544) (gcc (GCC) 11
 [boot]
 systemd=true
 
-[user]
-default=xhott
+[interop]
+enabled=true
+appendWindowsPath=false
 
 + mount | grep -E ' /mnt/c ' || true
 C:\ on /mnt/c type 9p (rw,noatime,aname=drvfs;path=C:\;uid=1000;gid=1000;symlinkroot=/mnt/,cache=5,access=client,msize=65536,trans=fd,rfd=6,wfd=6)
@@ -36,7 +37,7 @@ SHELL=/bin/bash
      1	/home/xhott/.npm-global/bin
      2	/home/xhott/.local/bin
      3	/home/xhott/.local/bin
-     4	/tmp/.tmpDo7jsJ
+     4	/tmp/.tmpZvWSPO
      5	/home/xhott/.npm-global/lib/node_modules/@openai/codex/vendor/x86_64-unknown-linux-musl/path
      6	/home/xhott/.local/bin
      7	/home/xhott/.local/bin
@@ -107,7 +108,7 @@ v22.21.0
 
 + command -v codex || true; codex --version 2>/dev/null || true
 /home/xhott/.npm-global/bin/codex
-codex-cli 0.77.0
+codex-cli 0.78.0
 
 == Python ==
 
@@ -120,7 +121,7 @@ pip 24.0 from /usr/lib/python3/dist-packages/pip (python 3.12)
 + ls -la ~/.ssh 2>/dev/null || true; ssh-add -l 2>/dev/null || true
 total 32
 drwx------  2 xhott xhott 4096 Jan  4 10:39 .
-drwxr-x--- 23 xhott xhott 4096 Jan  4 10:13 ..
+drwxr-x--- 23 xhott xhott 4096 Jan  6 06:12 ..
 -rw-------  1 xhott xhott   81 Jan  4 10:39 config
 -rw-------  1 xhott xhott   81 Jan  4 10:39 config.bak-20260104-103928
 -rw-------  1 xhott xhott  411 Jan  4 09:14 id_ed25519
@@ -132,30 +133,30 @@ drwxr-x--- 23 xhott xhott 4096 Jan  4 10:13 ..
 
 + df -h /home/xhott
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/sdd       1007G  5.9G  950G   1% /
+/dev/sdd       1007G  6.4G  950G   1% /
 
 + free -h
                total        used        free      shared  buff/cache   available
-Mem:           9.7Gi       494Mi       8.9Gi       3.5Mi       546Mi       9.2Gi
-Swap:          4.0Gi          0B       4.0Gi
+Mem:            11Gi       904Mi        10Gi       3.6Mi       1.0Gi        10Gi
+Swap:          3.0Gi          0B       3.0Gi
 
 + ls -la ~ | head -n 50
-total 340
-drwxr-x--- 23 xhott xhott  4096 Jan  4 10:13 .
-drwxr-xr-x  3 root  root   4096 Dec  9 17:21 ..
--rw-------  1 xhott xhott 41615 Jan  4 22:10 .bash_history
+total 348
+drwxr-x--- 23 xhott xhott  4096 Jan  6 06:12 .
+drwxr-xr-x  4 root  root   4096 Jan  6 05:57 ..
+-rw-------  1 xhott xhott 50249 Jan  6 17:26 .bash_history
 -rw-r--r--  1 xhott xhott   220 Dec  9 17:21 .bash_logout
 -rw-r--r--  1 xhott xhott  6189 Jan  4 08:52 .bashrc
 -rw-r--r--  1 xhott xhott  5428 Jan  4 07:59 .bashrc.bak-20260104-084950
 -rw-r--r--  1 xhott xhott  5651 Jan  4 08:50 .bashrc.bak-20260104-085113
 -rw-r--r--  1 xhott xhott  5941 Jan  4 08:51 .bashrc.bak-20260104-085207
 drwx------  5 xhott xhott  4096 Dec 13 06:30 .cache
-drwxr-xr-x 15 xhott xhott  4096 Jan  4 06:23 .claude
--rw-------  1 xhott xhott 56917 Jan  4 06:23 .claude.json
--rw-------  1 xhott xhott 56886 Jan  4 06:23 .claude.json.backup
+drwxr-xr-x 15 xhott xhott  4096 Jan  6 06:10 .claude
+-rw-------  1 xhott xhott 56883 Jan  6 06:12 .claude.json
+-rw-------  1 xhott xhott 56949 Jan  6 06:12 .claude.json.backup
 -rw-r--r--  1 xhott xhott    90 Dec 10 00:19 .claudignore
-drwxr-xr-x  5 xhott xhott  4096 Jan  4 22:11 .codex
-drwxr-xr-x  6 xhott xhott  4096 Dec 13 06:39 .config
+drwxr-xr-x  5 xhott xhott  4096 Jan  5 16:47 .codex
+drwxr-xr-x  7 xhott xhott  4096 Jan  6 16:15 .config
 drwxr-xr-x  3 xhott xhott  4096 Dec 13 06:30 .dotnet
 -rw-r--r--  1 xhott xhott   309 Jan  4 10:06 .gitconfig
 -rw-r--r--  1 xhott xhott   228 Dec 10 00:53 .gitconfig.bak-20260104-091354
@@ -163,10 +164,10 @@ drwxr-xr-x  3 xhott xhott  4096 Dec 13 06:30 .dotnet
 drwxr-xr-x  2 xhott xhott  4096 Dec 10 00:58 .landscape
 -rw-------  1 xhott xhott    81 Jan  4 08:02 .lesshst
 drwxr-xr-x  5 xhott xhott  4096 Dec 31 02:15 .local
--rw-rw-r--  1 xhott xhott     0 Jan  4 02:27 .motd_shown
+-rw-rw-r--  1 xhott xhott     0 Jan  6 00:52 .motd_shown
 drwxr-xr-x  4 xhott xhott  4096 Dec  9 17:38 .npm
 drwxr-xr-x  5 xhott xhott  4096 Dec 10 00:16 .npm-global
--rw-------  1 xhott xhott    31 Jan  4 08:25 .npmrc
+-rw-------  1 xhott xhott    31 Jan  6 06:07 .npmrc
 -rw-------  1 xhott xhott    21 Jan  4 07:11 .npmrc.bak
 drwxr-xr-x  8 xhott xhott  4096 Jan  4 07:07 .nvm
 -rw-r--r--  1 xhott xhott  1632 Jan  4 08:52 .profile
@@ -179,7 +180,7 @@ drwxr-xr-x  3 xhott xhott  4096 Dec 13 06:37 .vscode-remote-containers
 drwxr-xr-x  5 xhott xhott  4096 Dec 13 06:30 .vscode-server
 -rw-r--r--  1 xhott xhott   180 Dec 10 00:42 .wget-hsts
 -rw-r--r--  1 xhott xhott    26 Dec  9 22:09 .zshrc
-drwxr-xr-x  7 xhott xhott  4096 Jan  4 21:23 SYSopGPTWSL
+drwxr-xr-x  8 xhott xhott  4096 Jan  4 23:58 SYSopGPTWSL
 drwxr-xr-x  2 xhott xhott  4096 Dec 31 18:01 archives
 drwxr-xr-x 16 xhott xhott  4096 Jan  4 02:18 ops-operator
 drwxr-xr-x  3 xhott xhott  4096 Dec 31 02:15 ops_bootstrap
@@ -193,11 +194,11 @@ drwxr-xr-x  2 xhott xhott  4096 Jan  4 07:59 work
 + ps -p 1 -o comm=; ls -la /run/systemd/system 2>/dev/null || true; ls -la /run/dbus/system_bus_socket 2>/dev/null || true; systemctl --version
 systemd
 total 4
-drwxr-xr-x  3 root root  80 Jan  4 22:08 .
-drwxr-xr-x 24 root root 620 Jan  4 22:08 ..
--rw-r--r--  1 root root 337 Jan  4 22:08 netplan-ovs-cleanup.service
-drwxr-xr-x  2 root root  60 Jan  4 22:08 systemd-networkd.service.wants
-srw-rw-rw- 1 root root 0 Jan  4 22:08 /run/dbus/system_bus_socket
+drwxr-xr-x  3 root root  80 Jan  5 16:36 .
+drwxr-xr-x 24 root root 620 Jan  6 17:27 ..
+-rw-r--r--  1 root root 337 Jan  5 16:36 netplan-ovs-cleanup.service
+drwxr-xr-x  2 root root  60 Jan  5 16:36 systemd-networkd.service.wants
+srw-rw-rw- 1 root root 0 Jan  5 16:36 /run/dbus/system_bus_socket
 systemd 255 (255.4-1ubuntu8.12)
 +PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified
 
@@ -205,4 +206,5 @@ systemd 255 (255.4-1ubuntu8.12)
 running
 
 + ps -ef | grep -E "dbus-daemon|dbus-broker" | grep -v grep || true
-message+     160       1  0 22:08 ?        00:00:00 @dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+message+     161       1  0 Jan05 ?        00:00:02 @dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+xhott      59268     341  0 16:10 ?        00:00:00 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only

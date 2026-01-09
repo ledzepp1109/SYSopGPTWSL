@@ -1,5 +1,5 @@
 ﻿{
-    "collected_at":  "2026-01-04T22:13:21.5395643-06:00",
+    "collected_at":  "2026-01-06T17:37:40.3638550-06:00",
     "repo_root":  "Microsoft.PowerShell.Core\\FileSystem::\\\\wsl.localhost\\Ubuntu\\home\\xhott\\SYSopGPTWSL\\sysop\\windows\\..\\..",
     "windows":  {
                     "os":  {
@@ -70,7 +70,7 @@
                                                         "DriveLetter":  "C",
                                                         "FileSystem":  "NTFS",
                                                         "Size":  510619807744,
-                                                        "SizeRemaining":  112715112448,
+                                                        "SizeRemaining":  108743540736,
                                                         "HealthStatus":  "Healthy"
                                                     },
                                                     {

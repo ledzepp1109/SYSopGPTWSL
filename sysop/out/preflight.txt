@@ -1,4 +1,4 @@
-Preflight (read-only): 2026-01-04T22:12:30-06:00
+Preflight (read-only): 2026-01-06T17:36:53-06:00
 PASS: WSL detected
 PASS: PWD is not under /mnt
 PASS: codex on PATH: /home/xhott/.npm-global/bin/codex

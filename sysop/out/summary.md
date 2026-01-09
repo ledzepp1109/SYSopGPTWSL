@@ -1,6 +1,6 @@
 # SYSopGPTWSL Report
 
-- CollectedAt: 2026-01-04T22:13:25-06:00
+- CollectedAt: 2026-01-06T17:37:46-06:00
 - Repo: /home/xhott/SYSopGPTWSL
 - Artifacts: /home/xhott/SYSopGPTWSL/sysop/out
 
@@ -11,8 +11,8 @@
 ```text
 9:[nproc]
 12:[free -h]
-14:Mem:           9.7Gi       504Mi       8.9Gi       3.5Mi       538Mi       9.2Gi
-15:Swap:          4.0Gi          0B       4.0Gi
+14:Mem:            11Gi       906Mi        10Gi       3.6Mi       997Mi        10Gi
+15:Swap:          3.0Gi          0B       3.0Gi
 18:[mount | grep ' /mnt/c ']
 ```
 
@@ -30,22 +30,20 @@ Windows power: Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High pe
 ### Bench
 - File: `/home/xhott/SYSopGPTWSL/sysop/out/bench.txt`
 ```text
-15:CPU single-thread: seconds=15.000 loops=9821730 rate_per_s=654782
-16:CPU multi-process: workers=6 seconds=30.0463 loops=56649294 rate_per_s=1885400
-19:Memory alloc: mb=256 seconds=0.274
-20:Memory touch: mb=256 seconds=0.014 page_step=4096
-24:Disk write: seconds=0.612775 mib_per_s=835.5 (fdatasync)
-25:Disk read: seconds=0.106314 mib_per_s=4815.9 mode=iflag=direct
-31:[/tmp] write: seconds=0.119348 mib_per_s=1072.5 (fdatasync)
-32:[/tmp] read:  seconds=0.0250808 mib_per_s=5103.5 mode=iflag=direct
-34:[/mnt/c] write: seconds=1.2864 mib_per_s=99.5 (fdatasync)
-35:[/mnt/c] read:  seconds=0.838378 mib_per_s=152.7 mode=iflag=direct
+15:CPU single-thread: seconds=15.000 loops=9527977 rate_per_s=635198
+16:CPU multi-process: workers=8 seconds=27.9892 loops=66205194 rate_per_s=2365384
+19:Memory alloc: mb=256 seconds=0.309
+20:Memory touch: mb=256 seconds=0.017 page_step=4096
+24:Disk write: seconds=0.645278 mib_per_s=793.5 (fdatasync)
+25:Disk read: seconds=0.0981816 mib_per_s=5214.8 mode=iflag=direct
+31:[/tmp] write: seconds=0.123708 mib_per_s=1034.7 (fdatasync)
+32:[/tmp] read:  seconds=0.0323361 mib_per_s=3958.4 mode=iflag=direct
 ```
 
 ## Top bottlenecks (ranked)
 1) WSL not using full host resources (if you’re pushing CPU/RAM-intensive work)
-   - Evidence: WSL `nproc`=6 vs Windows logical=8
-   - Evidence: WSL Mem(total)=9.7Gi vs Windows RAM(bytes)=16852422656
+   - Evidence: WSL `nproc`=8 vs Windows logical=8
+   - Evidence: WSL Mem(total)=11Gi vs Windows RAM(bytes)=16852422656
 2) Windows power plan not set to Ultimate Performance (if you want max boost/latency bias)
    - Evidence: Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)
 3) Cross-OS filesystem overhead on /mnt/c (drvfs/9p)

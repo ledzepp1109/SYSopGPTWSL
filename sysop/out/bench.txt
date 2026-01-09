@@ -1,35 +1,33 @@
 SYSopGPTWSL Bench
-CollectedAt: 2026-01-04T22:12:32-06:00
+CollectedAt: 2026-01-06T17:36:55-06:00
 RepoRoot: /home/xhott/SYSopGPTWSL
 
 == WSL Bench (CPU/mem/disk) ==
-## WSL Bench (20260104-221232)
+## WSL Bench (20260106-173655)
 
 Context:
 - repo_root: /home/xhott/SYSopGPTWSL
 - uname: Linux TiffanyLT 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
-- nproc: 6
+- nproc: 8
 - python3: Python 3.12.3
 
 == CPU (sha256 loop) ==
-CPU single-thread: seconds=15.000 loops=9821730 rate_per_s=654782
-CPU multi-process: workers=6 seconds=30.0463 loops=56649294 rate_per_s=1885400
+CPU single-thread: seconds=15.000 loops=9527977 rate_per_s=635198
+CPU multi-process: workers=8 seconds=27.9892 loops=66205194 rate_per_s=2365384
 
 == Memory (allocation + touch) ==
-Memory alloc: mb=256 seconds=0.274
-Memory touch: mb=256 seconds=0.014 page_step=4096
+Memory alloc: mb=256 seconds=0.309
+Memory touch: mb=256 seconds=0.017 page_step=4096
 
 == Disk (/tmp write + fsync, then read) ==
-Temp file: /tmp/wsl-bench.QhdZZo (size=512MiB)
-Disk write: seconds=0.612775 mib_per_s=835.5 (fdatasync)
-Disk read: seconds=0.106314 mib_per_s=4815.9 mode=iflag=direct
+Temp file: /tmp/wsl-bench.Yti5yc (size=512MiB)
+Disk write: seconds=0.645278 mib_per_s=793.5 (fdatasync)
+Disk read: seconds=0.0981816 mib_per_s=5214.8 mode=iflag=direct
 
 == Notes ==
 - Disk read results can be cache-influenced; write uses fdatasync for a stronger signal.
 
 == Tiny FS compare (/tmp vs /mnt/c) ==
-[/tmp] write: seconds=0.119348 mib_per_s=1072.5 (fdatasync)
-[/tmp] read:  seconds=0.0250808 mib_per_s=5103.5 mode=iflag=direct
-mnt/c bench dir: /mnt/c/Users/xhott
-[/mnt/c] write: seconds=1.2864 mib_per_s=99.5 (fdatasync)
-[/mnt/c] read:  seconds=0.838378 mib_per_s=152.7 mode=iflag=direct
+[/tmp] write: seconds=0.123708 mib_per_s=1034.7 (fdatasync)
+[/tmp] read:  seconds=0.0323361 mib_per_s=3958.4 mode=iflag=direct
+SKIP: /mnt/c bench disabled by default (set SYSOP_ALLOW_MNT_C_BENCH=1 to enable)
