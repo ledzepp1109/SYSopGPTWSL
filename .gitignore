@@ -1,2 +1,5 @@
 wt/
+sysop/out/fixes/
+sysop/out/janitor_trash/
+sysop/out/*.invoke.log
 *.bak-*

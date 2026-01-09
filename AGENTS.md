@@ -59,6 +59,16 @@
 - Do not fetch from the internet; work only with local repo content.
 - Prefer Linux-native repos under `/home` (avoid `/mnt/c` unless required).
 
+## Safety boundaries (auto-fix mode)
+Auto-applied (Level 1):
+- ✅ Repo-scoped retries and artifact regeneration with backups + rollback commands.
+
+Generated only (Level 2–4):
+- ✅ PowerShell/scripts/instructions for manual review under `sysop/out/fixes/`.
+
+Never auto-applied:
+- ❌ Any host/system change (e.g., `.wslconfig`, power plan changes, `wsl --shutdown`, package installs).
+
 ## Operating rules
 - Read-only first: propose changes before edits/installs.
 - Evidence discipline: back non-obvious claims with `man`/`--help` output or command results.

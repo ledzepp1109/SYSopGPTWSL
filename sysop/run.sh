@@ -10,9 +10,15 @@ die() { say "ERROR: $*"; exit 1; }
 
 usage() {
   cat <<'EOF'
-Usage: ./sysop/run.sh [health|bench|snapshot|summarize|report|all]
+Usage: ./sysop/run.sh [health|bench|snapshot|summarize|report|all] [options]
 
 Writes outputs under: sysop/out/
+
+Options:
+  --apply-fixes           Enable repo-scoped auto-fix workflow (Level 1 retry, Level 2 script generation).
+  --auto-approve-safe     Auto-apply Level 1 SAFE fixes (otherwise prompt).
+  --dry-run               Show what would happen (for fixes); do not apply fixes or generate scripts.
+  -h, --help              Show help.
 EOF
 }
 
@@ -56,16 +62,69 @@ step_health() {
 
 step_snapshot() {
   require_cmd wslpath
-  require_cmd powershell.exe
+  local ps_cmd
+  if command -v powershell.exe >/dev/null 2>&1; then
+    ps_cmd="powershell.exe"
+  elif command -v pwsh.exe >/dev/null 2>&1; then
+    ps_cmd="pwsh.exe"
+  else
+    ps_cmd=""
+  fi
 
   local script_win out_win
   script_win="$(wslpath -w "$repo_root/sysop/windows/collect-windows.ps1")"
   out_win="$(wslpath -w "$out_dir")"
 
-  say "+ (cd /mnt/c && powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"$script_win\" -OutDir \"$out_win\")"
-  (cd /mnt/c && powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$script_win" -OutDir "$out_win")
+  if [ -z "$ps_cmd" ]; then
+    say "WARN: Windows snapshot skipped (no powershell.exe/pwsh.exe on PATH)"
+    local collected_at
+    collected_at="$(date -Is 2>/dev/null || date)"
+    cat >"$out_dir/windows_snapshot.json" <<EOF
+{
+  "collected_at": "${collected_at}",
+  "windows": {
+    "error": {
+      "kind": "missing_powershell",
+      "message": "powershell.exe/pwsh.exe not found on PATH from WSL"
+    }
+  }
+}
+EOF
+    printf '%s\n' "SYSopGPTWSL Windows Snapshot" "ERROR: missing powershell.exe/pwsh.exe (snapshot skipped)" >"$out_dir/windows_snapshot.txt"
+    return 0
+  fi
 
-  test -f "$out_dir/windows_snapshot.json" || die "missing: $out_dir/windows_snapshot.json"
+  local log_file rc
+  log_file="$out_dir/windows_snapshot.invoke.log"
+  say "+ (cd /mnt/c && ${ps_cmd} -NoProfile -ExecutionPolicy Bypass -File \"$script_win\" -OutDir \"$out_win\")"
+  set +e
+  (cd /mnt/c && "$ps_cmd" -NoProfile -ExecutionPolicy Bypass -File "$script_win" -OutDir "$out_win") >"$log_file" 2>&1
+  rc=$?
+  set -e
+
+  if [ "$rc" -ne 0 ] || [ ! -f "$out_dir/windows_snapshot.json" ]; then
+    say "WARN: Windows snapshot failed (interop may be down); writing placeholder snapshot JSON"
+    local collected_at
+    collected_at="$(date -Is 2>/dev/null || date)"
+    cat >"$out_dir/windows_snapshot.json" <<EOF
+{
+  "collected_at": "${collected_at}",
+  "windows": {
+    "error": {
+      "kind": "powershell_failed",
+      "command": "${ps_cmd}",
+      "exit_code": ${rc},
+      "log_file": "${log_file}",
+      "message": "powershell.exe invocation failed from WSL (see log_file); report will omit Windows details"
+    }
+  }
+}
+EOF
+    printf '%s\n' "SYSopGPTWSL Windows Snapshot" "ERROR: PowerShell invocation failed from WSL (see: $log_file)" >"$out_dir/windows_snapshot.txt"
+    return 0
+  fi
+
+  return 0
 }
 
 fs_tiny_bench() {
@@ -121,7 +180,9 @@ step_bench() {
     say ""
     say "== Tiny FS compare (/tmp vs /mnt/c) =="
     fs_tiny_bench /tmp "[/tmp]"
-    if [ -d /mnt/c ]; then
+    if [ "${SYSOP_ALLOW_MNT_C_BENCH:-0}" != "1" ]; then
+      say "SKIP: /mnt/c bench disabled by default (set SYSOP_ALLOW_MNT_C_BENCH=1 to enable)"
+    elif [ -d /mnt/c ]; then
       mntc_dir=""
       if [ -d "/mnt/c/Users/$USER" ] && [ -w "/mnt/c/Users/$USER" ]; then
         mntc_dir="/mnt/c/Users/$USER"
@@ -215,7 +276,28 @@ PY
 EOF
 }
 
-cmd="${1:-all}"
+cmd="all"
+if [ "${1-}" != "" ] && [[ "${1-}" != -* ]]; then
+  cmd="$1"
+  shift
+fi
+
+apply_fixes=0
+auto_approve_safe=0
+dry_run=0
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --apply-fixes) apply_fixes=1 ;;
+    --auto-approve-safe) auto_approve_safe=1 ;;
+    --dry-run) dry_run=1 ;;
+    -h|--help|help) usage; exit 0 ;;
+    --) shift; break ;;
+    *) die "unknown arg: $1" ;;
+  esac
+  shift
+done
+
 case "$cmd" in
   health) step_health ;;
   bench) step_bench ;;
@@ -223,12 +305,33 @@ case "$cmd" in
   summarize) step_summarize ;;
   report) step_report ;;
   all)
+    overall_rc=0
     step_health
     step_bench
     step_snapshot
+
+    if [ "$apply_fixes" -eq 1 ]; then
+      say "+ ./sysop/fixes/apply.sh"
+      fix_args=(--repo-root "$repo_root" --out-dir "$out_dir")
+      if [ "$auto_approve_safe" -eq 1 ]; then
+        fix_args+=(--auto-approve-safe)
+      fi
+      if [ "$dry_run" -eq 1 ]; then
+        fix_args+=(--dry-run)
+      fi
+      set +e
+      ./sysop/fixes/apply.sh "${fix_args[@]}"
+      fix_rc=$?
+      set -e
+      if [ "$fix_rc" -gt "$overall_rc" ]; then
+        overall_rc="$fix_rc"
+      fi
+    fi
+
     step_summarize
     step_report
     append_ledger_entry
+    exit "$overall_rc"
     ;;
   -h|--help|help) usage ;;
   *) usage; exit 2 ;;

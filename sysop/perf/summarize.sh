@@ -122,6 +122,24 @@ except Exception as e:
 
 w = data.get("windows", {})
 
+err = w.get("error")
+if isinstance(err, dict):
+    kind = err.get("kind", "unknown")
+    msg = err.get("message", "")
+    cmd = err.get("command", "")
+    rc = err.get("exit_code", "")
+    logf = err.get("log_file", "")
+    print(f"Windows snapshot ERROR: kind={kind}")
+    if msg:
+        print(f"Message: {msg}")
+    if cmd:
+        print(f"Command: {cmd}")
+    if rc != "":
+        print(f"Exit code: {rc}")
+    if logf:
+        print(f"Log file: {logf}")
+    raise SystemExit(0)
+
 def first(obj, key):
     v = obj.get(key)
     if isinstance(v, dict):

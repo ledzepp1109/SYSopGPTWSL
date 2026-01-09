@@ -8,6 +8,15 @@
 - Drift check (invariants): `./sysop/drift-check.sh`
 - Print baseline block: `./sysop/collect-baseline.sh`
 
+## Auto-fix mode (repo-scoped)
+Enables best-effort retries and generates scripts for manual remediation:
+- `./sysop/run.sh all --apply-fixes`
+- `./sysop/run.sh all --apply-fixes --auto-approve-safe`
+- `./sysop/run.sh all --apply-fixes --dry-run`
+
+Generated artifacts:
+- `sysop/out/fixes/`
+
 ## systemd/dbus recovery (WSL)
 If `systemctl` errors (e.g., `Failed to connect to bus: Operation not permitted`):
 1) From Windows PowerShell (outside WSL): `wsl --shutdown`
