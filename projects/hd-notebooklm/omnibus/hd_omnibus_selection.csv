@@ -1,0 +1,7 @@
+action,notebook,volume_id,volume_title,volume_kind,source_path,source_rel_path,source_type,notes
+# action: include|exclude
+# volume_kind: pdf_merge|video_single|video_concat
+# notebook: choose a stable name; NotebookLM has no cross-notebook search
+include,CORE_TEACHINGS,core-001,Core Teachings — Foundations (Vol 1),pdf_merge,G:\My Drive\Human Design Repo NotebookLM\Astrology Books\The Black Book.pdf,Astrology Books\The Black Book.pdf,pdf,example row; replace with your real paths
+exclude,CORE_TEACHINGS,core-001,Core Teachings — Foundations (Vol 1),pdf_merge,G:\My Drive\Human Design Repo NotebookLM\BG5\Some Duplicate.doc,BG5\Some Duplicate.doc,doc,exclude duplicates; prefer PDF when present
+
