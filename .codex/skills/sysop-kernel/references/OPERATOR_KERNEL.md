@@ -6,6 +6,10 @@
 - Outputs (diffable, overwritten each run): `sysop/out/`
 - Learning: append a small entry to `learn/LEDGER.md` after successful runs.
 
+## Plan-first (Codex)
+- Treat `./sysop/run.sh ...` as EXECUTION MODE because it writes under `sysop/out/` and appends to `learn/LEDGER.md`.
+- In PLAN MODE, prefer read-only probes (`./sysop/preflight.sh`, `./sysop/healthcheck.sh`) to gather evidence.
+
 ## What `./sysop/run.sh all` does
 1) `health`:
    - Writes `sysop/out/wsl_snapshot.txt`
@@ -28,8 +32,4 @@
 - `.wslconfig` caps apply only after `wsl --shutdown` (Windows PowerShell).
 
 ## Output format (operator)
-- Do Now:
-- Do Next:
-- What Changed:
-- Evidence: (command + key output lines)
-
+- Use the repo output format in `AGENTS.md` (“Output format (every response)”).
