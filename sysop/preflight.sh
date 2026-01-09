@@ -106,6 +106,28 @@ else
     warn "python3 not found"
 fi
 
+if have claude; then
+    pass "claude: $(command -v claude)"
+    claude_md="$HOME/.claude/CLAUDE.md"
+    if [ -f "$claude_md" ]; then
+        pass "Claude operator entrypoint: $claude_md"
+        if grep -Fq "ops-operator/config/CLAUDE.md" "$claude_md"; then
+            ops_spec="$HOME/ops-operator/config/CLAUDE.md"
+            if [ -f "$ops_spec" ]; then
+                pass "Claude operator spec present: $ops_spec"
+            else
+                warn "Claude operator spec missing at $ops_spec"
+            fi
+        else
+            warn "Claude operator entrypoint does not reference ops-operator/config/CLAUDE.md"
+        fi
+    else
+        warn "Claude operator entrypoint missing: $claude_md"
+    fi
+else
+    warn "claude not found on PATH (skip Claude operator checks)"
+fi
+
 git_repo_status
 
 say "Summary: PASS=$pass_count WARN=$warn_count FAIL=$fail_count"

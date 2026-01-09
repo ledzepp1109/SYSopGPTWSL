@@ -29,6 +29,7 @@ Notes:
 - `sysop/preflight.sh` — fast read-only sanity checks
 - `sysop/healthcheck.sh` — broader WSL audit (note: `systemctl` can be blocked in the Codex runner)
 - `sysop/drift-check.sh` — invariants check vs `sysop-report/2026-01-04_wsl_sysop.md`
+- `sysop/claude/check_wsl.sh` — verifies Claude-on-WSL wiring (CLI + entrypoint doc + ops-operator SSOT)
 - `sysop/windows/collect-windows.ps1` — Windows snapshot collector
 - `sysop/perf/wsl-bench.sh` — WSL microbench (CPU/mem/disk)
 - `sysop/perf/summarize.sh` — parses snapshots + bench into a report
@@ -38,6 +39,7 @@ Notes:
 - `./sysop/run.sh snapshot`
 - `./sysop/run.sh bench`
 - `./sysop/run.sh report`
+- `./sysop/claude/check_wsl.sh`
 - `codex execpolicy check --rules .codex/rules/sysop.rules --pretty rm -rf /`
 - `codex execpolicy check --rules .codex/rules/sysop.rules --pretty git status`
 

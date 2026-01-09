@@ -10,8 +10,13 @@ Setup guide: `docs/CODEX_SETUP.md`
 - `sysop/`: read-only scripts and operator notes
   - `sysop/preflight.sh`
   - `sysop/healthcheck.sh`
+- `sysop/claude/`: Claude-on-WSL verification helpers
+  - `sysop/claude/check_wsl.sh`
 - `sysop-report/`: baseline + ongoing notes
   - `sysop-report/2026-01-04_wsl_sysop.md`
+  - `sysop-report/2026-01-05_claude_docs_audit.md`
+- `docs/`: operator docs
+  - `docs/CLAUDE_WSL_OPERATOR.md`
 
 ## WSL-specific gotchas
 
