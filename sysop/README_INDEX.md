@@ -1,6 +1,12 @@
 # sysop index (Operator Kernel)
 
-One command:
+## Codex workflow (Plan-first)
+- Treat `./sysop/run.sh ...` as EXECUTION MODE: it writes under `sysop/out/` and appends to `learn/LEDGER.md`.
+- In PLAN MODE, prefer read-only probes (`./sysop/preflight.sh`, `./sysop/healthcheck.sh`) to gather evidence.
+- If this sysop work is one task among many, isolate it in its own worktree/branch (see `AGENTS.md`).
+- Worktree helper: `./sysop/wt-new.sh <task-slug> [base-ref]`.
+
+One command (after plan approval):
 - `./sysop/run.sh all`
 
 Outputs (diffable, overwritten each run):
