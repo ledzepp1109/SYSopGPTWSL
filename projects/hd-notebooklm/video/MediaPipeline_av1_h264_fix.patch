@@ -1,0 +1,21 @@
+*** Begin Patch
+*** Update File: video_processor.py
+@@
+     def process_with_validation(
+         self, source_path: Path, dest_path: Path
+     ) -> tuple[bool, str, float]:
+@@
+-        strategies = ["av1", "h264"]  # Try AV1 first, fallback to H.264
++        # Use configured strategies only (prevents crashes when config lacks "av1")
++        strategies = list(getattr(self.config, "video_settings", {}).keys())
++        if not strategies:
++            strategies = ["h264"]
+@@
+-            min_savings = self.config.video_settings[strategy].get(
+-                "min_savings_percent", 0
+-            )
++            min_savings = (
++                self.config.video_settings.get(strategy, {}).get("min_savings_percent", 0)
++            )
+*** End Patch
+

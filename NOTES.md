@@ -25,3 +25,12 @@ Template (copy/paste):
 - Fix: Verify with `./sysop/claude/check_wsl.sh`; if needed, generate a manual repair script via `./sysop/claude/gen_fix_wsl_operator.sh`.
 - Proof (command + expected key lines): `./sysop/claude/check_wsl.sh` → `Summary: ... FAIL=0`
 - Scope / when it applies: when using Claude Code (`claude`) inside WSL.
+
+### 2026-01-09 (HD NotebookLM video processing resume + MediaPipeline AV1 mismatch)
+- Mistake: Hardcoding video encode strategies (e.g. `["av1","h264"]`) while config only defines `h264`, causing crashes mid-run and making “resume from checkpoint” unreliable.
+- Fix: Derive strategies from config keys (and guard lookups with `.get(...)`); use an append-only manifest + checkpoint file for resumable processing.
+- Proof (Windows PowerShell, copy/paste runnable):
+  - Tool preflight: `powershell -ExecutionPolicy Bypass -File projects/hd-notebooklm/video/Resume-HDVideos.ps1 -SelfTest -ArchiveRoot "G:\My Drive\Human Design Repo NotebookLM" -ExperimentRoot "G:\My Drive\Human Design Experiments\Omnibus_v1\_video"`
+  - Resume run (checkpoint 251/860): `powershell -ExecutionPolicy Bypass -File projects/hd-notebooklm/video/Resume-HDVideos.ps1 -ArchiveRoot "G:\My Drive\Human Design Repo NotebookLM" -ExperimentRoot "G:\My Drive\Human Design Experiments\Omnibus_v1\_video" -StartAfter 251 -Resume`
+  - MediaPipeline patch artifact: `projects/hd-notebooklm/video/MediaPipeline_av1_h264_fix.patch`
+- Scope / when it applies: any HD/NotebookLM video processing pipeline that needs to resume safely after failures.
