@@ -37,3 +37,8 @@ Re-verify:
 - Entry-point operator doc: `~/.claude/CLAUDE.md`
 - Canonical spec (SSOT): `~/ops-operator/config/CLAUDE.md`
 
+## Hybrid automation (WSL ↔ Windows)
+
+If `/etc/wsl.conf` has `[interop] appendWindowsPath=true`, Windows binaries (for example `powershell.exe`, `pwsh.exe`) are callable from WSL and can be used for cross-OS automation.
+
+See: `docs/CODEX_SETUP.md` (Hybrid Automation Capabilities) for examples and safety notes (drive-backed cwd, PATH precedence).

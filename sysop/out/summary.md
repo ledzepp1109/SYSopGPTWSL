@@ -1,6 +1,6 @@
 # SYSopGPTWSL Report
 
-- CollectedAt: 2026-01-06T17:37:46-06:00
+- CollectedAt: 2026-01-15T17:25:15-06:00
 - Repo: /home/xhott/SYSopGPTWSL
 - Artifacts: /home/xhott/SYSopGPTWSL/sysop/out
 
@@ -11,7 +11,7 @@
 ```text
 9:[nproc]
 12:[free -h]
-14:Mem:            11Gi       906Mi        10Gi       3.6Mi       997Mi        10Gi
+14:Mem:            11Gi       510Mi        10Gi       3.5Mi       427Mi        11Gi
 15:Swap:          3.0Gi          0B       3.0Gi
 18:[mount | grep ' /mnt/c ']
 ```
@@ -30,14 +30,14 @@ Windows power: Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High pe
 ### Bench
 - File: `/home/xhott/SYSopGPTWSL/sysop/out/bench.txt`
 ```text
-15:CPU single-thread: seconds=15.000 loops=9527977 rate_per_s=635198
-16:CPU multi-process: workers=8 seconds=27.9892 loops=66205194 rate_per_s=2365384
-19:Memory alloc: mb=256 seconds=0.309
-20:Memory touch: mb=256 seconds=0.017 page_step=4096
-24:Disk write: seconds=0.645278 mib_per_s=793.5 (fdatasync)
-25:Disk read: seconds=0.0981816 mib_per_s=5214.8 mode=iflag=direct
-31:[/tmp] write: seconds=0.123708 mib_per_s=1034.7 (fdatasync)
-32:[/tmp] read:  seconds=0.0323361 mib_per_s=3958.4 mode=iflag=direct
+15:CPU single-thread: seconds=15.000 loops=10535891 rate_per_s=702392
+16:CPU multi-process: workers=8 seconds=30.0553 loops=67723241 rate_per_s=2253288
+19:Memory alloc: mb=256 seconds=0.262
+20:Memory touch: mb=256 seconds=0.013 page_step=4096
+24:Disk write: seconds=0.58866 mib_per_s=869.8 (fdatasync)
+25:Disk read: seconds=0.111197 mib_per_s=4604.4 mode=iflag=direct
+31:[/tmp] write: seconds=0.123178 mib_per_s=1039.1 (fdatasync)
+32:[/tmp] read:  seconds=0.0413939 mib_per_s=3092.2 mode=iflag=direct
 ```
 
 ## Top bottlenecks (ranked)

@@ -59,6 +59,11 @@
 - Do not fetch from the internet; work only with local repo content.
 - Prefer Linux-native repos under `/home` (avoid `/mnt/c` unless required).
 
+## Interop status (WSL ↔ Windows)
+- As of `2026-01-15`, WSL is configured with `/etc/wsl.conf` `[interop] appendWindowsPath=true`, enabling calls to Windows binaries from WSL (for example `powershell.exe`, `pwsh.exe`, `powercfg.exe`).
+- Treat Windows `.exe` calls as host actions: prefer a drive-backed cwd (`/mnt/c`) and beware PATH precedence (Windows tools can shadow Linux ones).
+- Note: some sandboxed runners block WSL↔Windows interop even when PATH is present (symptom: `UtilBindVsockAnyPort: ... socket failed 1`); fall back to a normal interactive WSL shell or native Windows PowerShell.
+
 ## Safety boundaries (auto-fix mode)
 Auto-applied (Level 1):
 - ✅ Repo-scoped retries and artifact regeneration with backups + rollback commands.

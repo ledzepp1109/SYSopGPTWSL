@@ -68,6 +68,44 @@ From the repo root:
 
 Artifacts are written under `sysop/out/` and the learning ledger is appended at `learn/LEDGER.md`.
 
+## Hybrid Automation Capabilities (WSL ↔ Windows)
+
+As of `2026-01-15`, WSL is configured to append the Windows PATH into WSL (`/etc/wsl.conf`):
+
+```ini
+[interop]
+enabled=true
+appendWindowsPath=true
+```
+
+This enables hybrid automation from WSL:
+- Windows executables are discoverable on WSL `$PATH` and callable from WSL by name (for example `powershell.exe`, `pwsh.exe`, `cmd.exe`, `powercfg.exe`, `explorer.exe`).
+- Prefer a drive-backed working directory for Windows commands (avoids UNC-path quirks):
+  - `(cd /mnt/c && powershell.exe ...)`
+- Translate WSL paths when passing them to Windows tools:
+  - `wslpath -w "$PWD/sysop/windows/collect-windows.ps1"`
+
+Example use cases:
+
+```bash
+# Query Windows system info (PowerShell 5.1)
+(cd /mnt/c && powershell.exe -NoProfile -Command "Get-ComputerInfo | Select-Object CsName, OsName, OsVersion")
+
+# Query Windows power plan
+(cd /mnt/c && powercfg.exe /GETACTIVESCHEME)
+
+# Launch a Windows app from WSL
+explorer.exe .
+
+# Cross-OS workflow: collect Windows snapshot (writes into sysop/out/)
+./sysop/run.sh snapshot
+```
+
+Notes:
+- This repo does not edit `/etc/wsl.conf`; treat it as a host-level setting managed manually.
+- With `appendWindowsPath=true`, PATH precedence can surprise you (a Windows tool can shadow a Linux one). Use explicit `.exe` when you intend to call Windows.
+- Some restricted runners can still block WSL↔Windows interop even when the PATH is present (common symptom: `UtilBindVsockAnyPort: ... socket failed 1`). If that happens, run the Windows command from a normal interactive WSL shell, or fall back to native Windows PowerShell.
+
 ## Verification
 
 - Version gate: `codex --version` shows `>=0.76.0`

@@ -21,6 +21,7 @@ Setup guide: `docs/CODEX_SETUP.md`
 ## WSL-specific gotchas
 
 - `learn/RULES.md` (UNC cwd, PowerShell UTF-8 BOM, `/home` vs `/mnt/c` perf)
+- Hybrid automation from WSL into Windows (PowerShell/Windows binaries): `docs/CODEX_SETUP.md`
 
 ## Usage
 - Run `sysop/preflight.sh` first, then `sysop/healthcheck.sh`.

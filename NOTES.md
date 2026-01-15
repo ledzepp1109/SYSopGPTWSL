@@ -34,3 +34,11 @@ Template (copy/paste):
   - Resume run (checkpoint 251/860): `powershell -ExecutionPolicy Bypass -File projects/hd-notebooklm/video/Resume-HDVideos.ps1 -ArchiveRoot "G:\My Drive\Human Design Repo NotebookLM" -ExperimentRoot "G:\My Drive\Human Design Experiments\Omnibus_v1\_video" -StartAfter 251 -Resume`
   - MediaPipeline patch artifact: `projects/hd-notebooklm/video/MediaPipeline_av1_h264_fix.patch`
 - Scope / when it applies: any HD/NotebookLM video processing pipeline that needs to resume safely after failures.
+
+### 2026-01-15 (WSL ↔ Windows hybrid automation)
+- Mistake: Expecting Windows tools (for example `powershell.exe`) to be callable from WSL without confirming WSL interop and PATH wiring; running Windows commands from a UNC-backed cwd.
+- Fix: Enable `/etc/wsl.conf` `[interop] appendWindowsPath=true` (manual host change) and run Windows commands from a drive-backed cwd (`/mnt/c`) with explicit `.exe` names.
+- Proof (command + expected key lines):
+  - `./sysop/healthcheck.sh | rg -n "appendWindowsPath=true"`
+  - `(cd /mnt/c && powershell.exe -NoProfile -Command "$PSVersionTable.PSVersion")`
+- Scope / when it applies: any cross-OS workflow (Windows snapshot collection, power plan queries, hybrid automation from Codex/Claude).

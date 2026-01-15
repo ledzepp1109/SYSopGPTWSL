@@ -1,4 +1,4 @@
-Preflight (read-only): 2026-01-06T17:36:53-06:00
+Preflight (read-only): 2026-01-15T17:24:15-06:00
 PASS: WSL detected
 PASS: PWD is not under /mnt
 PASS: codex on PATH: /home/xhott/.npm-global/bin/codex
@@ -6,5 +6,8 @@ PASS: npm prefix is user-level: /home/xhott/.npm-global
 PASS: PATH contains /home/xhott/.npm-global/bin exactly once
 PASS: node: v22.21.0
 PASS: python3: Python 3.12.3
+PASS: claude: /home/xhott/.npm-global/bin/claude
+PASS: Claude operator entrypoint: /home/xhott/.claude/CLAUDE.md
+PASS: Claude operator spec present: /home/xhott/ops-operator/config/CLAUDE.md
 WARN: git working tree has local changes
-Summary: PASS=7 WARN=1 FAIL=0
+Summary: PASS=10 WARN=1 FAIL=0

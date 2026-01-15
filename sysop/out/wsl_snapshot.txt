@@ -1,5 +1,5 @@
 SYSopGPTWSL WSL Snapshot
-CollectedAt: 2026-01-06T17:36:53-06:00
+CollectedAt: 2026-01-15T17:24:15-06:00
 RepoRoot: /home/xhott/SYSopGPTWSL
 
 == Kernel ==
@@ -11,7 +11,7 @@ Linux TiffanyLT 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 
 
 [free -h]
                total        used        free      shared  buff/cache   available
-Mem:            11Gi       906Mi        10Gi       3.6Mi       997Mi        10Gi
+Mem:            11Gi       510Mi        10Gi       3.5Mi       427Mi        11Gi
 Swap:          3.0Gi          0B       3.0Gi
 
 == Filesystems ==

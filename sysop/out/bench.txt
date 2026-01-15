@@ -1,9 +1,9 @@
 SYSopGPTWSL Bench
-CollectedAt: 2026-01-06T17:36:55-06:00
+CollectedAt: 2026-01-15T17:24:17-06:00
 RepoRoot: /home/xhott/SYSopGPTWSL
 
 == WSL Bench (CPU/mem/disk) ==
-## WSL Bench (20260106-173655)
+## WSL Bench (20260115-172417)
 
 Context:
 - repo_root: /home/xhott/SYSopGPTWSL
@@ -12,22 +12,22 @@ Context:
 - python3: Python 3.12.3
 
 == CPU (sha256 loop) ==
-CPU single-thread: seconds=15.000 loops=9527977 rate_per_s=635198
-CPU multi-process: workers=8 seconds=27.9892 loops=66205194 rate_per_s=2365384
+CPU single-thread: seconds=15.000 loops=10535891 rate_per_s=702392
+CPU multi-process: workers=8 seconds=30.0553 loops=67723241 rate_per_s=2253288
 
 == Memory (allocation + touch) ==
-Memory alloc: mb=256 seconds=0.309
-Memory touch: mb=256 seconds=0.017 page_step=4096
+Memory alloc: mb=256 seconds=0.262
+Memory touch: mb=256 seconds=0.013 page_step=4096
 
 == Disk (/tmp write + fsync, then read) ==
-Temp file: /tmp/wsl-bench.Yti5yc (size=512MiB)
-Disk write: seconds=0.645278 mib_per_s=793.5 (fdatasync)
-Disk read: seconds=0.0981816 mib_per_s=5214.8 mode=iflag=direct
+Temp file: /tmp/wsl-bench.urnnxS (size=512MiB)
+Disk write: seconds=0.58866 mib_per_s=869.8 (fdatasync)
+Disk read: seconds=0.111197 mib_per_s=4604.4 mode=iflag=direct
 
 == Notes ==
 - Disk read results can be cache-influenced; write uses fdatasync for a stronger signal.
 
 == Tiny FS compare (/tmp vs /mnt/c) ==
-[/tmp] write: seconds=0.123708 mib_per_s=1034.7 (fdatasync)
-[/tmp] read:  seconds=0.0323361 mib_per_s=3958.4 mode=iflag=direct
+[/tmp] write: seconds=0.123178 mib_per_s=1039.1 (fdatasync)
+[/tmp] read:  seconds=0.0413939 mib_per_s=3092.2 mode=iflag=direct
 SKIP: /mnt/c bench disabled by default (set SYSOP_ALLOW_MNT_C_BENCH=1 to enable)
