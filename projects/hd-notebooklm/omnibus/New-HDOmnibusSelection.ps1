@@ -8,6 +8,8 @@ Param(
   [Parameter(Mandatory = $true)]
   [string]$ManifestGlob,
 
+  [string]$ArchiveSnapshotCsv = "",
+
   [switch]$IncludeVideos,
 
   [switch]$IncludeDocs
@@ -37,12 +39,13 @@ function Get-RelativePath([string]$Root, [string]$FullPath) {
 
 function Guess-Notebook([string]$RelPath) {
   $p = $RelPath.ToLowerInvariant()
-  if ($p -match "incarnation crosses") { return "INCARNATION_CROSSES" }
-  if ($p -match "\\bg5\\") { return "BG5" }
-  if ($p -match "phs|nutrition") { return "PHS_NUTRITION" }
-  if ($p -match "dream rave") { return "DREAM_RAVE" }
-  if ($p -match "astrology") { return "ASTROLOGY" }
-  if ($p -match "center|centres") { return "CENTERS_MECHANICS" }
+  if ($p -match "incarnation\\s+cross") { return "INCARNATION_CROSSES" }
+  if ($p -match "\\bg5\\|\\bbg5\\b") { return "BG5" }
+  if ($p -match "phs|nutrition|determination|environment|primary health system") { return "PHS_NUTRITION" }
+  if ($p -match "dream rave|variable|tone|base|color|bardo") { return "ADVANCED" }
+  if ($p -match "astrology|ephemer|fixed stars|zodiac") { return "ASTROLOGY" }
+  if ($p -match "type|strategy|authority|profile|\\blines\\b|\\bline\\b") { return "TYPES_STRATEGY_AUTHORITY" }
+  if ($p -match "gate|channel|circuit|center|centres|mechanics|anatomy") { return "CENTERS_MECHANICS" }
   return "CORE_TEACHINGS"
 }
 
@@ -75,6 +78,35 @@ function Read-ManifestLines([string]$ManifestPath) {
   return Get-Content -LiteralPath $ManifestPath -Encoding UTF8 | ForEach-Object { $_.Trim() } | Where-Object { $_ -and ($_ -notmatch "^\s*#") }
 }
 
+function Build-SnapshotIndex([string]$SnapshotCsv) {
+  if (-not $SnapshotCsv) { return $null }
+  if (-not (Test-Path -LiteralPath $SnapshotCsv)) { throw "Archive snapshot CSV not found: $SnapshotCsv" }
+
+  $rows = Import-Csv -LiteralPath $SnapshotCsv
+  $idx = @{}
+
+  foreach ($r in $rows) {
+    $name = $r.Name
+    if (-not $name) { continue }
+    $key = $name.ToLowerInvariant()
+    if (-not $idx.ContainsKey($key)) { $idx[$key] = @() }
+    $idx[$key] += $r
+  }
+
+  return $idx
+}
+
+function Select-BestSnapshotMatch([object[]]$Candidates) {
+  if (-not $Candidates -or $Candidates.Count -eq 0) { return $null }
+
+  $sorted = $Candidates | Sort-Object `
+    @{ Expression = { if ($_.RelativePath -match "\\\\assets\\\\") { 1 } else { 0 } } }, `
+    @{ Expression = { if ($_.RelativePath) { $_.RelativePath.Length } else { 999999 } } }, `
+    @{ Expression = { try { -[int64]$_.SizeBytes } catch { 0 } } }
+
+  return ($sorted | Select-Object -First 1)
+}
+
 $archive = Resolve-FullPath $ArchiveRoot
 $experiment = Resolve-FullPath $ExperimentRoot
 if (-not (Test-Path -LiteralPath $archive)) { throw "ARCHIVE not found: $archive" }
@@ -85,6 +117,12 @@ New-Dir $plansDir
 
 $outCsv = Join-Path $plansDir "hd_omnibus_selection.csv"
 
+$snapshotIndex = $null
+if ($ArchiveSnapshotCsv) {
+  $snapshotIndex = Build-SnapshotIndex -SnapshotCsv $ArchiveSnapshotCsv
+  Write-Host ("Loaded archive snapshot index: {0} distinct names" -f $snapshotIndex.Keys.Count)
+}
+
 $allowedExts = @(".pdf")
 if ($IncludeVideos) { $allowedExts += @(".mp4", ".m4v", ".mov", ".mkv", ".avi", ".webm") }
 if ($IncludeDocs) { $allowedExts += @(".doc", ".docx") }
@@ -93,22 +131,48 @@ $manifestPaths = Get-ManifestPaths -Glob $ManifestGlob
 Write-Host ("Found {0} manifest file(s)." -f $manifestPaths.Count)
 
 $rows = New-Object System.Collections.Generic.List[Object]
+$resolvedViaSnapshot = 0
+$unresolved = 0
 
 foreach ($m in $manifestPaths) {
   $lines = Read-ManifestLines -ManifestPath $m
   foreach ($line in $lines) {
+    $resolved = $false
+    $lineExt = ([IO.Path]::GetExtension($line)).ToLowerInvariant()
+    if (-not ($allowedExts -contains $lineExt)) { continue }
+
     $full = $line
     if ($full -notmatch "^[A-Za-z]:\\") {
       $full = Join-Path $archive $full
     }
-    if (-not (Test-Path -LiteralPath $full)) { continue }
+
+    $rel = $null
+    if (-not (Test-Path -LiteralPath $full)) {
+      if ($snapshotIndex) {
+        $leaf = [IO.Path]::GetFileName($full)
+        if ($leaf) {
+          $key = $leaf.ToLowerInvariant()
+          if ($snapshotIndex.ContainsKey($key)) {
+            $best = Select-BestSnapshotMatch -Candidates $snapshotIndex[$key]
+            if ($best -and $best.Path -and (Test-Path -LiteralPath $best.Path)) {
+              $full = $best.Path
+              $rel = $best.RelativePath
+              $resolvedViaSnapshot++
+              $resolved = $true
+            }
+          }
+        }
+      }
+    }
+
+    if (-not (Test-Path -LiteralPath $full)) { $unresolved++; continue }
     $item = Get-Item -LiteralPath $full -ErrorAction SilentlyContinue
     if (-not $item) { continue }
 
     $ext = $item.Extension.ToLowerInvariant()
     if (-not ($allowedExts -contains $ext)) { continue }
 
-    $rel = Get-RelativePath -Root $archive -FullPath $item.FullName
+    if (-not $rel) { $rel = Get-RelativePath -Root $archive -FullPath $item.FullName }
     $nb = Guess-Notebook -RelPath $rel
     $vid = Guess-VolumeId -Notebook $nb -RelPath $rel
 
@@ -121,7 +185,7 @@ foreach ($m in $manifestPaths) {
       source_path = $item.FullName
       source_rel_path = $rel
       source_type = $ext.TrimStart(".")
-      notes = ("from_manifest={0}" -f (Split-Path -Leaf $m))
+      notes = ("from_manifest={0}{1}" -f (Split-Path -Leaf $m), ($resolved ? ";resolved_via_snapshot" : ""))
     })
   }
 }
@@ -154,4 +218,7 @@ foreach ($stem in $byStem.Keys) {
 
 $final | Export-Csv -LiteralPath $outCsv -NoTypeInformation -Encoding UTF8
 Write-Host ("Wrote selection CSV: {0}" -f $outCsv)
+if ($snapshotIndex) {
+  Write-Host ("Resolved via snapshot: {0} (unresolved manifest lines: {1})" -f $resolvedViaSnapshot, $unresolved)
+}
 Write-Host "Next: edit volume_id/volume_title/notebook to group into 10–15 sources per notebook."

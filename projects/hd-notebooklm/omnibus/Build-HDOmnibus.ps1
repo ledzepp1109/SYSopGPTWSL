@@ -38,6 +38,56 @@ function Require-Command([string]$Name, [string]$Help) {
   if (-not (Test-Command $Name)) { throw "$Name not found on PATH. $Help" }
 }
 
+function Find-CommandPath([string]$Name) {
+  $cmd = Get-Command $Name -ErrorAction SilentlyContinue
+  if ($cmd) { return $cmd.Source }
+  return $null
+}
+
+function Find-Ghostscript() {
+  $cmd = Get-Command "gswin64c.exe" -ErrorAction SilentlyContinue
+  if ($cmd) { return $cmd.Source }
+
+  $roots = @()
+  if ($env:ProgramFiles) { $roots += (Join-Path $env:ProgramFiles "gs") }
+  if (${env:ProgramFiles(x86)}) { $roots += (Join-Path ${env:ProgramFiles(x86)} "gs") }
+
+  foreach ($root in $roots) {
+    if (-not (Test-Path -LiteralPath $root)) { continue }
+    $dirs = Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending
+    foreach ($d in $dirs) {
+      $p = Join-Path $d.FullName "bin\\gswin64c.exe"
+      if (Test-Path -LiteralPath $p) { return $p }
+    }
+  }
+
+  return $null
+}
+
+function Find-LibreOffice() {
+  $cmd = Get-Command "soffice.exe" -ErrorAction SilentlyContinue
+  if ($cmd) { return $cmd.Source }
+
+  $roots = @()
+  if ($env:ProgramFiles) { $roots += (Join-Path $env:ProgramFiles "LibreOffice\\program\\soffice.exe") }
+  if (${env:ProgramFiles(x86)}) { $roots += (Join-Path ${env:ProgramFiles(x86)} "LibreOffice\\program\\soffice.exe") }
+
+  foreach ($p in $roots) {
+    if (Test-Path -LiteralPath $p) { return $p }
+  }
+
+  return $null
+}
+
+function Invoke-External([string]$Exe, [string[]]$ArgumentList, [string]$Label) {
+  if ($DryRun) {
+    Write-Host ("[DRYRUN] {0} {1}" -f $Exe, ($ArgumentList -join " "))
+    return
+  }
+  & $Exe @ArgumentList
+  if ($LASTEXITCODE -ne 0) { throw ("{0} failed (exit={1})" -f $Label, $LASTEXITCODE) }
+}
+
 function Get-PdfWordCountEstimate([string]$PdfPath) {
   if (-not (Test-Command "pdftotext")) { return $null }
 
@@ -95,15 +145,138 @@ function Word-ConvertDocToPdf([object]$WordApp, [string]$InPath, [string]$OutPdf
   $doc.Close()
 }
 
-function Pdfsam-Merge([string[]]$Inputs, [string]$OutputPdf) {
-  # PDFsam Console syntax varies by version; we try the common "merge -o -f" form.
-  $args = @("merge", "-o", $OutputPdf, "-f") + $Inputs
-  if ($DryRun) {
-    Write-Host ("[DRYRUN] pdfsam-console {0}" -f ($args -join " "))
+function Normalize-Ascii([string]$Text) {
+  if ($null -eq $Text) { return "" }
+  $bytes = [Text.Encoding]::ASCII.GetBytes($Text)
+  return [Text.Encoding]::ASCII.GetString($bytes)
+}
+
+function Escape-PsString([string]$Text) {
+  $t = Normalize-Ascii -Text $Text
+  $t = $t.Replace("\", "\\")
+  $t = $t.Replace("(", "\(")
+  $t = $t.Replace(")", "\)")
+  return $t
+}
+
+function Wrap-Line([string]$Line, [int]$MaxChars) {
+  $out = New-Object System.Collections.Generic.List[string]
+  $t = $Line
+  while ($t.Length -gt $MaxChars) {
+    $out.Add($t.Substring(0, $MaxChars))
+    $t = $t.Substring($MaxChars)
+  }
+  $out.Add($t)
+  return $out
+}
+
+function Ghostscript-ExportTextPdf([string]$GhostscriptExe, [string]$Text, [string]$OutPdf) {
+  if (-not $GhostscriptExe) { throw "Ghostscript not available for text→PDF rendering." }
+  if (Test-Path -LiteralPath $OutPdf) { Remove-Item -LiteralPath $OutPdf -Force }
+
+  $ps = Join-Path ([IO.Path]::GetDirectoryName($OutPdf)) ("hd_omnibus_{0}.ps" -f ([Guid]::NewGuid().ToString("n")))
+  try {
+    $rawLines = ($Text -split "\\r?\\n")
+    $lines = New-Object System.Collections.Generic.List[string]
+    foreach ($l in $rawLines) {
+      foreach ($w in (Wrap-Line -Line $l -MaxChars 92)) { $lines.Add($w) }
+    }
+
+    $psLines = New-Object System.Collections.Generic.List[string]
+    $psLines.Add("%!PS-Adobe-3.0")
+    $psLines.Add("<< /PageSize [612 792] >> setpagedevice")
+    $psLines.Add("/Helvetica findfont 10 scalefont setfont")
+
+    $x = 54
+    $y = 760
+    $leading = 12
+    $lineOnPage = 0
+
+    foreach ($l in $lines) {
+      if ($lineOnPage -ge 56) {
+        $psLines.Add("showpage")
+        $y = 760
+        $lineOnPage = 0
+      }
+      $esc = Escape-PsString -Text $l
+      $psLines.Add(("{0} {1} moveto ({2}) show" -f $x, $y, $esc))
+      $y -= $leading
+      $lineOnPage++
+    }
+    $psLines.Add("showpage")
+
+    $psLines | Out-File -LiteralPath $ps -Encoding ascii -Force
+
+    $args = @("-q", "-dNOPAUSE", "-dBATCH", "-sDEVICE=pdfwrite", ("-sOutputFile=" + $OutPdf), $ps)
+    Invoke-External -Exe $GhostscriptExe -ArgumentList $args -Label "ghostscript text→pdf"
+  } finally {
+    Remove-Item -LiteralPath $ps -Force -ErrorAction SilentlyContinue
+  }
+}
+
+function Export-TextPdf([object]$WordApp, [string]$GhostscriptExe, [string]$Text, [string]$OutPdf) {
+  if ($WordApp) {
+    Word-ExportTextPdf -WordApp $WordApp -Text $Text -OutPdf $OutPdf
     return
   }
-  $p = Start-Process -FilePath "pdfsam-console" -ArgumentList $args -NoNewWindow -PassThru -Wait
-  if ($p.ExitCode -ne 0) { throw "pdfsam-console merge failed (exit=$($p.ExitCode))" }
+  Ghostscript-ExportTextPdf -GhostscriptExe $GhostscriptExe -Text $Text -OutPdf $OutPdf
+}
+
+function LibreOffice-ConvertDocToPdf([string]$SofficeExe, [string]$InPath, [string]$OutPdf) {
+  if (-not $SofficeExe) { throw "LibreOffice not available for DOC/DOCX→PDF conversion." }
+  if (Test-Path -LiteralPath $OutPdf) { Remove-Item -LiteralPath $OutPdf -Force }
+
+  $outDir = Split-Path -Parent $OutPdf
+  New-Dir $outDir
+
+  $args = @(
+    "--headless",
+    "--nologo",
+    "--nofirststartwizard",
+    "--convert-to", "pdf",
+    "--outdir", $outDir,
+    $InPath
+  )
+  Invoke-External -Exe $SofficeExe -ArgumentList $args -Label "libreoffice convert-to pdf"
+
+  $expected = Join-Path $outDir (([IO.Path]::GetFileNameWithoutExtension($InPath)) + ".pdf")
+  if (-not (Test-Path -LiteralPath $expected)) { throw "LibreOffice did not produce expected PDF: $expected" }
+  if ($expected -ne $OutPdf) { Move-Item -LiteralPath $expected -Destination $OutPdf -Force }
+}
+
+function Convert-DocToPdf([object]$WordApp, [string]$SofficeExe, [string]$InPath, [string]$OutPdf) {
+  if ($WordApp) {
+    Word-ConvertDocToPdf -WordApp $WordApp -InPath $InPath -OutPdf $OutPdf
+    return
+  }
+  LibreOffice-ConvertDocToPdf -SofficeExe $SofficeExe -InPath $InPath -OutPdf $OutPdf
+}
+
+function Pdfsam-Merge([string]$PdfsamExe, [string[]]$Inputs, [string]$OutputPdf) {
+  # PDFsam Console syntax varies by version; we try the common "merge -o -f" form.
+  $args = @("merge", "-o", $OutputPdf, "-f") + $Inputs
+  Invoke-External -Exe $PdfsamExe -ArgumentList $args -Label "pdfsam-console merge"
+}
+
+function Ghostscript-Merge([string]$GhostscriptExe, [string[]]$Inputs, [string]$OutputPdf, [string]$PdfSettings = "/ebook") {
+  if (-not $GhostscriptExe) { throw "Ghostscript not available for PDF merge." }
+  $args = @(
+    "-q",
+    "-dNOPAUSE",
+    "-dBATCH",
+    "-sDEVICE=pdfwrite",
+    ("-dPDFSETTINGS=" + $PdfSettings),
+    ("-sOutputFile=" + $OutputPdf)
+  ) + $Inputs
+  Invoke-External -Exe $GhostscriptExe -ArgumentList $args -Label "ghostscript merge"
+}
+
+function Pdf-Merge([string]$PdfsamExe, [string]$GhostscriptExe, [string[]]$Inputs, [string]$OutputPdf) {
+  if ($PdfsamExe) {
+    Pdfsam-Merge -PdfsamExe $PdfsamExe -Inputs $Inputs -OutputPdf $OutputPdf
+    return
+  }
+  Ghostscript-Merge -GhostscriptExe $GhostscriptExe -Inputs $Inputs -OutputPdf $OutputPdf
 }
 
 function Ensure-UnderSize([string]$Path, [int64]$MaxBytes) {
@@ -115,13 +288,6 @@ $archive = Resolve-FullPath $ArchiveRoot
 $experiment = Resolve-FullPath $ExperimentRoot
 if (-not (Test-Path -LiteralPath $archive)) { throw "ARCHIVE not found: $archive" }
 if (-not (Test-Path -LiteralPath $SelectionCsv)) { throw "Selection CSV not found: $SelectionCsv" }
-
-Require-Command -Name "pdfsam-console" -Help "Install PDFsam Console and add it to PATH."
-Require-Command -Name "ffmpeg" -Help "Install ffmpeg and add it to PATH."
-Require-Command -Name "ffprobe" -Help "ffprobe should ship with ffmpeg."
-
-$word = Word-Ensure
-if (-not $word) { throw "Microsoft Word COM automation not available. Install Office or add LibreOffice fallback to this script." }
 
 try {
   $maxBytes = [int64]$MaxSourceMB * 1024 * 1024
@@ -137,6 +303,32 @@ try {
 
   $rows = Import-Csv -LiteralPath $SelectionCsv
   $incl = $rows | Where-Object { $_.action -eq "include" }
+
+  $needsPdf = ($incl | Where-Object { $_.volume_kind -eq "pdf_merge" } | Measure-Object).Count -gt 0
+  $needsVideo = ($incl | Where-Object { $_.volume_kind -like "video_*" } | Measure-Object).Count -gt 0
+  $needsDocs = ($incl | Where-Object { $_.source_type -in @("doc", "docx") } | Measure-Object).Count -gt 0
+
+  $pdfsamExe = Find-CommandPath -Name "pdfsam-console"
+  $ghostscriptExe = Find-Ghostscript
+  $sofficeExe = Find-LibreOffice
+  $word = Word-Ensure
+
+  if ($needsVideo) {
+    Require-Command -Name "ffmpeg" -Help "Install ffmpeg and add it to PATH."
+    Require-Command -Name "ffprobe" -Help "ffprobe should ship with ffmpeg."
+  }
+
+  if ($needsPdf -and (-not $pdfsamExe) -and (-not $ghostscriptExe)) {
+    throw "No PDF merge tool available. Install pdfsam-console or Ghostscript (gswin64c.exe)."
+  }
+
+  if ($needsPdf -and (-not $word) -and (-not $ghostscriptExe)) {
+    throw "No text→PDF renderer available for TOC/dividers. Install Microsoft Word (COM) or Ghostscript."
+  }
+
+  if ($needsDocs -and (-not $word) -and (-not $sofficeExe)) {
+    throw "DOC/DOCX conversion requested but neither Word (COM) nor LibreOffice is available."
+  }
 
   $groups = $incl | Group-Object notebook, volume_id, volume_kind
 
@@ -158,6 +350,16 @@ try {
       if (-not $safeName) { $safeName = $volumeId }
       $outPdf = Join-Path $volDir ("{0}.pdf" -f $safeName.Replace(" ", "_"))
 
+      if ((Test-Path -LiteralPath $outPdf) -and (-not $DryRun)) {
+        try {
+          Ensure-UnderSize -Path $outPdf -MaxBytes $maxBytes
+          Write-Host ("Skip existing (under limit): {0}" -f $outPdf)
+          continue
+        } catch {
+          Write-Warning ("Existing output will be rebuilt: {0}" -f $outPdf)
+        }
+      }
+
       $stageDir = Join-Path $logsDir ("stage_{0}_{1}" -f $notebook, $volumeId)
       New-Dir $stageDir
 
@@ -170,7 +372,7 @@ try {
 
       $inputs = New-Object System.Collections.Generic.List[string]
       $tocPdf = Join-Path $stageDir "000_TOC.pdf"
-      Word-ExportTextPdf -WordApp $word -Text ($tocText -join "`r`n") -OutPdf $tocPdf
+      Export-TextPdf -WordApp $word -GhostscriptExe $ghostscriptExe -Text ($tocText -join "`r`n") -OutPdf $tocPdf
       $inputs.Add($tocPdf)
 
       $i = 0
@@ -190,7 +392,7 @@ try {
           $convDir = Join-Path $stageDir "converted"
           New-Dir $convDir
           $srcPdf = Join-Path $convDir (([IO.Path]::GetFileNameWithoutExtension($src)) + ".pdf")
-          Word-ConvertDocToPdf -WordApp $word -InPath $src -OutPdf $srcPdf
+          Convert-DocToPdf -WordApp $word -SofficeExe $sofficeExe -InPath $src -OutPdf $srcPdf
         }
 
         $divider = Join-Path $stageDir ("{0:D3}_DIVIDER.pdf" -f $i)
@@ -200,14 +402,29 @@ try {
           ("Path: {0}" -f $r.source_rel_path),
           ("SHA256: {0}" -f (Get-Sha256 -Path $srcPdf))
         ) -join "`r`n"
-        Word-ExportTextPdf -WordApp $word -Text $dividerText -OutPdf $divider
+        Export-TextPdf -WordApp $word -GhostscriptExe $ghostscriptExe -Text $dividerText -OutPdf $divider
 
         $inputs.Add($divider)
         $inputs.Add($srcPdf)
       }
 
-      Pdfsam-Merge -Inputs $inputs.ToArray() -OutputPdf $outPdf
-      Ensure-UnderSize -Path $outPdf -MaxBytes $maxBytes
+      if ($DryRun) {
+        Write-Host ("[DRYRUN] Would write: {0} (sources={1}, inputs={2})" -f $outPdf, $g.Group.Count, $inputs.Count)
+        continue
+      }
+
+      try {
+        Pdf-Merge -PdfsamExe $pdfsamExe -GhostscriptExe $ghostscriptExe -Inputs $inputs.ToArray() -OutputPdf $outPdf
+        Ensure-UnderSize -Path $outPdf -MaxBytes $maxBytes
+      } catch {
+        $oversize = ($_.Exception.Message -match "Output exceeds size limit")
+        if (-not $oversize) { throw }
+        if ($pdfsamExe) { throw }
+
+        Write-Warning ("Oversize output; retrying Ghostscript merge with /screen: {0}" -f $outPdf)
+        Ghostscript-Merge -GhostscriptExe $ghostscriptExe -Inputs $inputs.ToArray() -OutputPdf $outPdf -PdfSettings "/screen"
+        Ensure-UnderSize -Path $outPdf -MaxBytes $maxBytes
+      }
 
       $words = Get-PdfWordCountEstimate -PdfPath $outPdf
       if ($null -eq $words) {
