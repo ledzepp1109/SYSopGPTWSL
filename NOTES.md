@@ -42,3 +42,10 @@ Template (copy/paste):
   - `./sysop/healthcheck.sh | rg -n "appendWindowsPath=true"`
   - `(cd /mnt/c && powershell.exe -NoProfile -Command "$PSVersionTable.PSVersion")`
 - Scope / when it applies: any cross-OS workflow (Windows snapshot collection, power plan queries, hybrid automation from Codex/Claude).
+
+### 2026-01-15 (HD NotebookLM omnibus — Windows fallbacks)
+- Mistake: Assuming `pdfsam-console` and Microsoft Word COM are always present; using a PowerShell helper param named `Args` (can break argument forwarding and leave Ghostscript stuck at `GS>`).
+- Fix: Add Ghostscript merge fallback (`gswin64c.exe` + `-sOutputFile=...`), retry `/screen` on oversize; add LibreOffice fallback for DOC/DOCX conversion; rename helper param to `ArgumentList`.
+- Proof (command + expected key lines):
+  - Build: `pwsh.exe -NoProfile -ExecutionPolicy Bypass -File projects/hd-notebooklm/omnibus/Build-HDOmnibus.ps1 -ArchiveRoot "G:\My Drive\Human Design Repo NotebookLM" -ExperimentRoot "G:\My Drive\Human Design Experiments\Omnibus_v1\_build_auto\run_20260115-224244" -SelectionCsv "G:\My Drive\Human Design Experiments\Omnibus_v1\_build_auto\run_20260115-224244\_plans\hd_omnibus_selection.csv"` → `Build complete.`
+- Scope / when it applies: building NotebookLM omnibus PDFs on Windows machines without PDFsam/Word installed.
