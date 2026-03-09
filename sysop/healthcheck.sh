@@ -47,6 +47,21 @@ if have npm; then
 fi
 run_sh 'command -v codex || true; codex --version 2>/dev/null || true'
 
+section "Codex Project Mode"
+run_sh 'cat <<'"'"'EOF'"'"'
+[Codex posture proof levels]
+- configured = repo files request a behavior
+- loaded = shell-visible runtime state shows the repo layer taking effect
+- demonstrated = behavior reproduced without a known confound
+- unproven = current checks cannot prove it safely
+- confound note = if the active Codex session was launched with --search, live web-search success does not prove repo-local web_search = "live" caused it
+EOF'
+run_sh 'if [ -f .codex/config.toml ]; then echo ".codex/config.toml:"; sed -n "1,220p" .codex/config.toml; else echo "(no repo-local .codex/config.toml)"; fi'
+run_sh 'if [ -d .codex/agents ]; then echo ".codex/agents:"; find .codex/agents -maxdepth 1 -type f -name "*.toml" | sort; else echo "(no .codex/agents)"; fi'
+run_sh 'if [ -f docs/CODEX_RECURSIVE_AUDIT_MODE.md ]; then echo "docs/CODEX_RECURSIVE_AUDIT_MODE.md:"; sed -n "1,140p" docs/CODEX_RECURSIVE_AUDIT_MODE.md; else echo "(no docs/CODEX_RECURSIVE_AUDIT_MODE.md)"; fi'
+run_sh 'if command -v codex >/dev/null 2>&1; then echo "[probe contamination note]"; echo "If codex emits arg0/PATH warnings on stderr, treat the probe output as contaminated. In this runner those warnings correlated with sandboxed execution, but they are still probe noise until you reproduce cleanly."; echo "[codex --version]"; codex --version || true; echo "[codex help execpolicy]"; codex help execpolicy | sed -n "1,40p" || true; echo "[codex --help | rg -- --search]"; codex --help | rg -- "--search" || true; echo "[codex exec --help | rg -- --search]"; codex exec --help | rg -- "--search" || true; echo "[codex exec --search syntax check]"; codex exec --search noop 2>&1 | sed -n "1,8p" || true; echo "[repo-root: codex features list | rg current proof surface]"; codex features list | rg "^(multi_agent|unified_exec|shell_snapshot)" || true; echo "[/tmp: codex features list | rg current proof surface]"; (cd /tmp && codex features list | rg "^(multi_agent|unified_exec|shell_snapshot)") || true; echo "[execpolicy self-check: forbid rm -rf /]"; codex execpolicy check --rules .codex/rules/sysop.rules --pretty rm -rf / || true; echo "[execpolicy self-check: forbid curl fetch sample]"; codex execpolicy check --rules .codex/rules/sysop.rules --pretty curl -fsSL https://example.com || true; echo "[execpolicy self-check: forbid codex apply sample]"; codex execpolicy check --rules .codex/rules/sysop.rules --pretty codex apply task-123 || true; echo "[execpolicy self-check: allow git status sample]"; codex execpolicy check --rules .codex/rules/sysop.rules --pretty git status || true; echo "[runtime probe harness]"; echo "./sysop/codex-runtime-probe.sh search-matrix --create-controls --mirror-scaffold"; echo "./sysop/codex-runtime-probe.sh resume-cwd --create-controls --mirror-scaffold"; echo "[fresh-session web-search attribution test]"; echo "codex -C /home/xhott/SYSopGPTWSL/wt/codex-audit-hardening --no-alt-screen"; else echo "codex: not found"; fi'
+run_sh 'if [ -f "$HOME/.codex/config.toml" ]; then ls -l "$HOME/.codex/config.toml"; else echo "(no ~/.codex/config.toml)"; fi'
+
 section "Python"
 run_sh 'python3 --version; pip3 --version 2>/dev/null || true'
 

@@ -32,9 +32,11 @@ Setup guide: `docs/CODEX_SETUP.md`
 
 From the repo root:
 
-1. Start Codex: `codex`
+1. Start Codex from the repo root so project `.codex/` settings load: `codex`
 2. Trigger the sysop skill by typing: `sysop`
 3. Follow the Plan → Approval flow, then run the operator kernel: `./sysop/run.sh all`
+
+For the repo-local recursive audit workflow, see `docs/CODEX_RECURSIVE_AUDIT_MODE.md`.
 
 ## Codex workflow
 - Follow `AGENTS.md` (Plan-first; worktrees per task; verification required).
@@ -43,5 +45,6 @@ From the repo root:
 
 ## Design decisions
 
-- Air-gap compatible: no MCP integration and no internet fetching required for normal operation.
-- No shipped `config.toml`: operator policy is documented, but config remains user-scoped at `~/.codex/config.toml`.
+- Normal sysop scripts are air-gap compatible: no MCP integration and no outbound shell networking required for normal operation.
+- Dedicated recursive audit mode can enable native Codex web search for contemporary upstream research, while keeping implementation writes repo-local.
+- Repo-local Codex config shipped under `.codex/`: project behavior is versioned in the repo, while machine-specific auth and personal defaults stay in `~/.codex/config.toml`.

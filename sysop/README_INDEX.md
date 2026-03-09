@@ -6,6 +6,34 @@
 - If this sysop work is one task among many, isolate it in its own worktree/branch (see `AGENTS.md`).
 - Worktree helper: `./sysop/wt-new.sh <task-slug> [base-ref]`.
 
+## Recursive audit mode (repo-local Codex)
+- Start Codex from the repo root/worktree so `.codex/config.toml` is loaded.
+- The repo-local mode wires `researcher`, `challenger`, `implementer`, and `verifier` into one audit chain.
+- Native Codex web search is enabled for contemporary upstream audit research in that mode.
+- Shell command network access remains off; the web-search tool and shell networking are intentionally separated.
+- Challenger/verifier are intended as blocking gates for material findings and edits.
+- The chain is operator-enforced and conditionally trustworthy, not a runtime-guaranteed hard binding proven by current shell checks.
+- Restart Codex after changing repo-local `.codex/` files; a running session does not hot-reload startup mode.
+- Canonical doc: `../docs/CODEX_RECURSIVE_AUDIT_MODE.md`
+
+Proof states used by the `sysop` checks:
+- `configured` = repo files request a behavior
+- `loaded` = shell-visible runtime state shows the repo layer taking effect
+- `demonstrated` = behavior reproduced without a known confound
+- `unproven` = current checks cannot prove it safely
+
+Current limits:
+- `multi_agent` can be load-checked from shell by comparing `codex features list` in this worktree vs `/tmp`.
+- No-flag search success does not prove repo-local `web_search = "live"` caused it, because default cached search remains a live alternative explanation.
+- Archived controls under `sysop/out/codex-runtime-20260306-154230/` show that repo-local `web_search` materially gates non-interactive availability here: a disabled control returned `SEARCH=no`, and `codex exec -c 'web_search="live"'` restored search in that same control.
+- A later `sysop/out/verify-search-matrix/` rerun hit a usage-limit failure on the override-live control, so treat that rerun as inconclusive rather than contradictory.
+- In archived `codex-cli 0.111.0` controls and a local `0.112.0` retest, treat non-interactive `--search` as unstable: `codex exec --search` errored and `codex --search exec` did not restore search in the disabled control here.
+- If a Codex session was launched with `--search`, any live web-search success in that session is a confounded test and must not be attributed to repo-local config.
+- Worktree isolation is conditional, not absolute; local controls showed that explicit `codex exec resume <SESSION_ID>` can rebind to the caller worktree, while `fork` surfaces a cwd chooser. After `resume`, `fork`, or `apply`, explicitly verify `pwd`, branch, and intended worktree before edits.
+- No safe automated shell-side smoke test currently proves the full `researcher -> challenger -> implementer -> verifier` chain.
+- Current Codex shell probes can emit recurring `arg0` temp-dir / PATH-update warnings on stderr. In this runner they correlated with sandboxed execution and disappeared in an unsandboxed `codex --version` check, so treat them as likely sandbox-side contamination here.
+- `execpolicy` is live and scriptable in the current CLI, but it only enforces a narrow set of command-prefix boundaries.
+
 One command (after plan approval):
 - `./sysop/run.sh all`
 
@@ -40,8 +68,21 @@ Notes:
 - `./sysop/run.sh bench`
 - `./sysop/run.sh report`
 - `./sysop/claude/check_wsl.sh`
+- `codex help execpolicy`
 - `codex execpolicy check --rules .codex/rules/sysop.rules --pretty rm -rf /`
+- `codex execpolicy check --rules .codex/rules/sysop.rules --pretty curl -fsSL https://example.com`
 - `codex execpolicy check --rules .codex/rules/sysop.rules --pretty git status`
+- `codex execpolicy check --rules .codex/rules/sysop.rules --pretty codex apply task-123`
+
+Runtime probes (Codex login + transport required)
+- `./sysop/codex-runtime-probe.sh search-matrix --create-controls --mirror-scaffold`
+- `./sysop/codex-runtime-probe.sh resume-cwd --create-controls --mirror-scaffold`
+- `./sysop/codex-network-denial-probe.sh`
+
+Fresh-session web-search attribution test (no `--search` flag):
+- `codex -C /home/xhott/SYSopGPTWSL/wt/codex-audit-hardening --no-alt-screen`
+- First prompt:
+  `Use official OpenAI docs to answer a current Codex question. Before answering, state whether live web search is available in this session and whether that availability can be attributed to repo-local config rather than a CLI --search flag.`
 
 ## Debugging with `/ps` Command (Codex CLI `>=0.76.0`)
 

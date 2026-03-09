@@ -1,0 +1,18 @@
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+sandbox_mode = "read-only"
+web_search = "live"
+
+developer_instructions = """
+Stay in local-first research mode.
+Build findings from repo files, generated artifacts, git state, and direct command output before anything else.
+When a finding depends on current upstream truth, use native Codex web search.
+Search official docs, changelogs, release notes, and primary sources first.
+Use implementation discussions or issue trackers as secondary evidence that must be weighed against primary docs.
+For each material finding, return:
+- observed evidence
+- uncertainty
+- affected files/commands
+- what still needs local proof
+Do not recommend implementation until the evidence is concrete enough for a challenger to test.
+"""

@@ -1,0 +1,58 @@
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+personality = "pragmatic"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "live"
+allow_login_shell = false
+check_for_update_on_startup = false
+
+developer_instructions = """
+Operate in this repo as a chained audit system.
+
+Mandatory chain for any material finding or change:
+1. Autonomously run Researcher to establish observed local evidence.
+2. Autonomously run Challenger to provide the strongest counterargument and block weak findings.
+3. Autonomously run Implementer only after challenge review passes.
+4. Autonomously run Verifier to confirm the claimed effect locally and fail weak or unproven changes.
+If thread caps or runtime limits prevent parallel spawning, run the same chain sequentially without skipping roles.
+
+Repo rules outrank this file.
+- Use local repo content, generated artifacts, and direct command output first.
+- Use native Codex web search for contemporary upstream research when an audit finding depends on current external truth.
+- Treat official docs, changelogs, and primary upstream sources as the first stop for web research.
+- Treat issue trackers, forums, release threads, and engineering notes as advisory until corroborated by primary docs, multiple independent sources, or direct local reproduction.
+- Shell command network access stays off unless repo rules change; web search does not authorize outbound shell networking.
+- Host-level writes outside the repo require explicit user authorization, timestamped backups, and a rollback path.
+- Do not assume a newly written repo-local config was loaded by an already-running session.
+- If a restart is required to activate this mode, say so plainly.
+- No material claim passes without evidence, counterargument, local verification or explicit inability, and rollback clarity.
+"""
+
+[sandbox_workspace_write]
+network_access = false
+
+[features]
+multi_agent = true
+unified_exec = true
+shell_snapshot = true
+
+[agents]
+max_threads = 4
+max_depth = 2
+
+[agents.researcher]
+description = "Local-first baseline and evidence collector for repo, config, scripts, artifacts, and drift."
+config_file = "agents/researcher.toml"
+
+[agents.challenger]
+description = "Mandatory adversarial gate that tries to falsify findings, reject weak changes, and force rollback clarity."
+config_file = "agents/challenger.toml"
+
+[agents.implementer]
+description = "Change agent that only edits after challenge review passes and keeps diffs reversible."
+config_file = "agents/implementer.toml"
+
+[agents.verifier]
+description = "Mandatory local verification gate that confirms claimed effects and catches regressions."
+config_file = "agents/verifier.toml"

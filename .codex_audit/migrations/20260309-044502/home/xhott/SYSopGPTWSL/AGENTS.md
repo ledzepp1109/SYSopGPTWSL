@@ -1,17 +1,5 @@
 # GPT/Codex WSL Sysop Repo
 
-<!-- BEGIN SYSOP GATE DOCTRINE -->
-## Sysop Gate Doctrine
-- All material changes must flow through `Researcher -> Challenger -> Implementer -> Verifier`.
-- The hard enforcement point for material changes is `sysop/sysop-gate.sh`.
-- No material change may be treated as complete, and no commit may be created by the steady-state gate, unless all four stages complete successfully.
-- Researcher and Challenger establish and challenge evidence first. Implementer acts only on a passed challenge. Verifier must confirm the final state before commit.
-- Primary docs, official changelogs, and direct local reproduction outrank issue trackers, forums, and other advisory sources.
-- If the gate returns `BLOCK` or `FAIL`, do not bypass it by direct editing unless the user explicitly waives the gate for that task.
-- For steady-state material changes, this doctrine outranks any older manual workflow text below if they conflict.
-<!-- END SYSOP GATE DOCTRINE -->
-
-
 ## Index-first
 - Read `AGENTS.md` first, then `sysop/README_INDEX.md` before acting.
 

@@ -1,0 +1,18 @@
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+[projects."/mnt/c/ops"]
+trust_level = "trusted"
+
+[projects."/home/xhott"]
+trust_level = "trusted"
+
+[projects."/home/xhott/SYSopGPTWSL"]
+trust_level = "trusted"
+
+[notice.model_migrations]
+"gpt-5.2" = "gpt-5.3-codex"
+
+[features]
+unified_exec = true
+shell_snapshot = true
